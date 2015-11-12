@@ -1,24 +1,25 @@
 // Enemies our player must avoid
-var enemySpeeds = function randomIntFromInterval(){
-        return Math.floor(Math.random()*(500-100+1)+100);
+var randomNumber = function randomIntFromInterval(){
+        return Math.floor(Math.random()*(350-100+1)+100);
     };
 
 var Enemy = function(x, y) {
-    this.x = x;//+"px";
-    this.y = y;//+"px";
-    this.speed = enemySpeeds();
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+    this.x = x;
+    this.y = y;
+    this.speed = randomNumber();
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    //this.x += this.speed;//*dt;
+    if(this.x<505){
+        this.x += this.speed*dt;
+    }else{
+        this.x = 0;
+        this.y = Math.floor(Math.random()*(250-60+1)+60);
+        this.speed = randomNumber();
+    }
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
@@ -30,13 +31,14 @@ Enemy.prototype.render = function() {
 };
 
 var Player = function(x, y) {
-    this.x = x;//+"px";
-    this.y = y;//+"px";
-    this.player = 'images/char-pink-girl.png';
+    this.player = 'images/char-boy.png';
+    this.x = x;
+    this.y = y;
+
 };
 
 Player.prototype.update = function(){
-    this.x += 101; 
+    //this.x += 101; 
 };
 
 Player.prototype.render = function(){
@@ -50,24 +52,21 @@ Player.prototype.handleInput = function(){
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-
-
-//enemy1.update();
-
-//enemy2.update();    
+   
 var allEnemies = [];
-allEnemies[0] = new Enemy(0, 60);
-allEnemies[1] = new Enemy(202, 140);
-allEnemies[2] = new Enemy(101, 225)
-
 var player = new Player(202, 415);
-console.log(player);
 
+function initialEnemies(){
+    allEnemies.push(new Enemy(1, 60));
+    allEnemies.push(new Enemy(202, 140));
+    //allEnemies.push(new Enemy(101, 225));
 
-for(var i=0; i<allEnemies.length+1; i++){
-    allEnemies[i].render();
-};
+    for(var i=0; i<allEnemies.length+1; i++){
+        allEnemies[i].render();
+    };
+}
 
+initialEnemies();
 player.render();
 
 // Now instantiate your objects.
