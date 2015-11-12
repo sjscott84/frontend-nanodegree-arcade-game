@@ -1,6 +1,6 @@
 // Enemies our player must avoid
 var randomNumber = function randomIntFromInterval(){
-        return Math.floor(Math.random()*(350-100+1)+100);
+        return Math.floor(Math.random()*(350-200+1)+100);
     };
 
 var Enemy = function(x, y) {
@@ -16,9 +16,10 @@ Enemy.prototype.update = function(dt) {
     if(this.x<505){
         this.x += this.speed*dt;
     }else{
-        this.x = 0;
+        this.x = -100;
         this.y = Math.floor(Math.random()*(250-60+1)+60);
         this.speed = randomNumber();
+        this.x += this.speed*dt;
     }
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
