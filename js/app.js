@@ -28,7 +28,10 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if(Resources.get(this.sprite)){
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    };
+
 };
 
 var Player = function(x, y) {
@@ -43,11 +46,26 @@ Player.prototype.update = function(){
 };
 
 Player.prototype.render = function(){
-    ctx.drawImage(Resources.get(this.player), this.x, this.y);
+    if(Resources.get(this.player)){
+        ctx.drawImage(Resources.get(this.player), this.x, this.y);
+    };
 };
 
-Player.prototype.handleInput = function(){
-
+Player.prototype.handleInput = function(key){
+    switch (key){
+        case "left":
+            console.log("LEFT");
+            break;
+        case "up":
+            console.log("UP");
+            break;
+        case "right":
+            console.log("RIGHT");
+            break;
+        case "down":
+            console.log("DOWN");
+            break;
+    };
 };
 
 // Now write your own player class
@@ -62,13 +80,14 @@ function initialEnemies(){
     allEnemies.push(new Enemy(202, 140));
     //allEnemies.push(new Enemy(101, 225));
 
-    for(var i=0; i<allEnemies.length+1; i++){
+    for(var i=0; i<allEnemies.length; i++){
         allEnemies[i].render();
     };
 }
 
 initialEnemies();
 player.render();
+
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -79,6 +98,7 @@ player.render();
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
+
     var allowedKeys = {
         37: 'left',
         38: 'up',
