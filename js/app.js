@@ -13,9 +13,10 @@ var Enemy = function(x, y) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    if(this.x<505){
+    if(this.x < 505){
         this.x += this.speed*dt;
     }else{
+        //this is to reset the enemy
         this.x = -100;
         this.y = Math.floor(Math.random()*(250-60+1)+60);
         this.speed = randomNumber();
@@ -54,16 +55,24 @@ Player.prototype.render = function(){
 Player.prototype.handleInput = function(key){
     switch (key){
         case "left":
-            console.log("LEFT");
+            if(this.x>100){
+                this.x = this.x-101;
+            };
             break;
         case "up":
-            console.log("UP");
+            if(this.y>100){
+            this.y = this.y - 101;
+            };
             break;
         case "right":
-            console.log("RIGHT");
+            if(this.x<404){
+                this.x = this.x + 101;
+            };
             break;
         case "down":
-            console.log("DOWN");
+            if(this.y<404){
+                this.y = this.y + 101;
+            };
             break;
     };
 };
