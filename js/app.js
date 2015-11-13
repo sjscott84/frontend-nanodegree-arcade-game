@@ -3,6 +3,14 @@ var randomNumber = function randomIntFromInterval(){
         return Math.floor(Math.random()*(350-200+1)+100);
     };
 
+var screenWidth = 505;
+var screenHeight = 606;
+var tileWidth = 101;
+var tileHeight = 101;
+var playerSideMove = 101;
+var playerVerticalMove = 82;
+var playerHeight = 171;
+
 var Enemy = function(x, y) {
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
@@ -13,7 +21,7 @@ var Enemy = function(x, y) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    if(this.x < 505){
+    if(this.x < screenWidth){
         this.x += this.speed*dt;
     }else{
         //this is to reset the enemy
@@ -36,14 +44,15 @@ Enemy.prototype.render = function() {
 };
 
 var Player = function(x, y) {
-    this.player = 'images/char-boy.png';
+    this.player = 'images/char-boy-square.png';
     this.x = x;
     this.y = y;
 
 };
 
 Player.prototype.update = function(){
-    //this.x += 101; 
+    //this.x = tileWidth*2;
+    //this.y = tileHeight*4; 
 };
 
 Player.prototype.render = function(){
@@ -55,23 +64,24 @@ Player.prototype.render = function(){
 Player.prototype.handleInput = function(key){
     switch (key){
         case "left":
-            if(this.x>100){
-                this.x = this.x-101;
+            if(this.x>tileWidth-1){
+                this.x = this.x - playerSideMove;
             };
             break;
         case "up":
-            if(this.y>100){
-            this.y = this.y - 101;
+            if(this.y>playerVerticalMove){
+                this.y = this.y - playerVerticalMove;
+                //player.update();
             };
             break;
         case "right":
-            if(this.x<404){
-                this.x = this.x + 101;
+            if(this.x<screenWidth - tileWidth){
+                this.x = this.x + playerSideMove;
             };
             break;
         case "down":
-            if(this.y<404){
-                this.y = this.y + 101;
+            if(this.y<screenHeight - tileHeight*2){
+                this.y = this.y + playerVerticalMove;
             };
             break;
     };
@@ -82,7 +92,7 @@ Player.prototype.handleInput = function(key){
 // a handleInput() method.
    
 var allEnemies = [];
-var player = new Player(202, 415);
+var player = new Player(tileWidth*2, screenHeight-151);
 
 function initialEnemies(){
     allEnemies.push(new Enemy(1, 60));
