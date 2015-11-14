@@ -55,6 +55,11 @@ Player.prototype.update = function(){
     //this.y = tileHeight*4; 
 };
 
+Player.prototype.reset = function(){
+    this.x = tileWidth*2;
+    this.y = screenHeight-151; 
+};
+
 Player.prototype.render = function(){
     if(Resources.get(this.player)){
         ctx.drawImage(Resources.get(this.player), this.x, this.y);
@@ -71,7 +76,10 @@ Player.prototype.handleInput = function(key){
         case "up":
             if(this.y>playerVerticalMove){
                 this.y = this.y - playerVerticalMove;
-                //player.update();
+                    if(this.y<playerVerticalMove){
+                        console.log("You win!");
+                        setTimeout(function() {player.reset()}.bind(player.reset), 1000);
+                    };
             };
             break;
         case "right":
