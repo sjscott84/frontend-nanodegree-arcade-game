@@ -10,6 +10,7 @@ var tileHeight = 101;
 var playerSideMove = 101;
 var playerVerticalMove = 82;
 var playerHeight = 171;
+var imageEmptySpace = 70;
 
 var Enemy = function(x, y) {
     this.sprite = 'images/enemy-bug.png';
@@ -44,7 +45,7 @@ Enemy.prototype.render = function() {
 };
 
 var Player = function(x, y) {
-    this.player = 'images/char-boy-square.png';
+    this.player = 'images/char-boy.png';
     this.x = x;
     this.y = y;
 
@@ -57,7 +58,7 @@ Player.prototype.update = function(){
 
 Player.prototype.reset = function(){
     this.x = tileWidth*2;
-    this.y = screenHeight-151; 
+    this.y = screenHeight-135-imageEmptySpace; 
 };
 
 Player.prototype.render = function(){
@@ -74,9 +75,9 @@ Player.prototype.handleInput = function(key){
             };
             break;
         case "up":
-            if(this.y>playerVerticalMove){
+            if(this.y + imageEmptySpace > playerVerticalMove){
                 this.y = this.y - playerVerticalMove;
-                    if(this.y<playerVerticalMove){
+                    if(this.y + imageEmptySpace < playerVerticalMove){
                         console.log("You win!");
                         setTimeout(function() {player.reset()}.bind(player.reset), 1000);
                     };
@@ -100,7 +101,7 @@ Player.prototype.handleInput = function(key){
 // a handleInput() method.
    
 var allEnemies = [];
-var player = new Player(tileWidth*2, screenHeight-151);
+var player = new Player(tileWidth*2, screenHeight-135-imageEmptySpace);
 
 function initialEnemies(){
     allEnemies.push(new Enemy(1, 60));
