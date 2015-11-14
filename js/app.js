@@ -12,10 +12,12 @@ var playerVerticalMove = 82;
 var playerHeight = 171;
 var imageEmptySpace = 70;
 
-var Enemy = function(x, y) {
+var Enemy = function(x, y, h, w) {
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
     this.y = y;
+    this.h = h;
+    this.w = w;
     this.speed = randomNumber();
 };
 
@@ -24,12 +26,14 @@ var Enemy = function(x, y) {
 Enemy.prototype.update = function(dt) {
     if(this.x < screenWidth){
         this.x += this.speed*dt;
+        player.collide();
     }else{
         //this is to reset the enemy
         this.x = -100;
         this.y = Math.floor(Math.random()*(250-60+1)+60);
         this.speed = randomNumber();
         this.x += this.speed*dt;
+        player.collide();
     }
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
@@ -44,10 +48,12 @@ Enemy.prototype.render = function() {
 
 };
 
-var Player = function(x, y) {
+var Player = function(x, y, h, w) {
     this.player = 'images/char-boy.png';
     this.x = x;
     this.y = y;
+    this.h = h;
+    this.w = w;
 
 };
 
@@ -65,6 +71,17 @@ Player.prototype.render = function(){
     if(Resources.get(this.player)){
         ctx.drawImage(Resources.get(this.player), this.x, this.y);
     };
+};
+
+Player.prototype.collide = function(){
+    for(var i=0; i<allEnemies.length; i++){
+        if(this.x < allEnemies[i].x + allEnemies[i].w &&
+            this.x + this.w > allEnemies[i].x &&
+            this.y < allEnemies[i].y + allEnemies[i].h &&
+            this.h + this.y > allEnemies[i].y){
+            console.log("COLLISION");
+        }
+    }
 };
 
 Player.prototype.handleInput = function(key){
@@ -92,7 +109,6 @@ Player.prototype.handleInput = function(key){
             if(this.y<screenHeight - tileHeight*2){
                 this.y = this.y + playerVerticalMove;
             };
-            break;
     };
 };
 
@@ -101,11 +117,11 @@ Player.prototype.handleInput = function(key){
 // a handleInput() method.
    
 var allEnemies = [];
-var player = new Player(tileWidth*2, screenHeight-135-imageEmptySpace);
+var player = new Player(tileWidth*2, screenHeight-135-imageEmptySpace, 171, 101);
 
 function initialEnemies(){
-    allEnemies.push(new Enemy(1, 60));
-    allEnemies.push(new Enemy(202, 140));
+    allEnemies.push(new Enemy(1, 60, 171, 101));
+    allEnemies.push(new Enemy(202, 140, 171, 101));
     //allEnemies.push(new Enemy(101, 225));
 
     for(var i=0; i<allEnemies.length; i++){
