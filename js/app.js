@@ -3,14 +3,19 @@ var randomNumber = function randomIntFromInterval(){
         return Math.floor(Math.random()*(350-200+1)+100);
     };
 
-var screenWidth = 505;
-var screenHeight = 606;
-var tileWidth = 101;
-var tileHeight = 101;
-var playerSideMove = 101;
-var playerVerticalMove = 82;
-var playerHeight = 171;
-var imageEmptySpace = 70;
+var screenWidth = 505,
+screenHeight = 606,
+tileWidth = 101,
+tileHeight = 101,
+playerSideMove = 101,
+playerVerticalMove = 82,
+playerHeight = 171,
+playerEmptySpace = 64+10,
+playerLowerEmptySpace = 32+10,
+enemyEmptySpace = 78+10,
+playerSideSpace = 17+10,
+enemyLowerEmptySpace = 27+10;
+
 
 var Enemy = function(x, y, h, w) {
     this.sprite = 'images/enemy-bug.png';
@@ -64,7 +69,7 @@ Player.prototype.update = function(){
 
 Player.prototype.reset = function(){
     this.x = tileWidth*2;
-    this.y = screenHeight-135-imageEmptySpace; 
+    this.y = screenHeight-135-playerEmptySpace; 
 };
 
 Player.prototype.render = function(){
@@ -75,11 +80,11 @@ Player.prototype.render = function(){
 
 Player.prototype.collide = function(){
     for(var i=0; i<allEnemies.length; i++){
-        if(this.x < allEnemies[i].x + allEnemies[i].w &&
-            this.x + this.w > allEnemies[i].x &&
-            this.y < allEnemies[i].y + allEnemies[i].h &&
-            this.h + this.y > allEnemies[i].y){
-            console.log("COLLISION");
+        if(this.x + playerSideSpace < allEnemies[i].x + allEnemies[i].w &&
+            this.x + playerSideSpace + this.w > allEnemies[i].x &&
+            this.y + playerEmptySpace + playerLowerEmptySpace < allEnemies[i].y + enemyEmptySpace + enemyLowerEmptySpace + allEnemies[i].h &&
+            this.h + this.y + playerEmptySpace + playerLowerEmptySpace > allEnemies[i].y + enemyEmptySpace + enemyLowerEmptySpace){
+            setTimeout(function() {player.reset()}.bind(player.reset), 200);
         }
     }
 };
@@ -92,9 +97,9 @@ Player.prototype.handleInput = function(key){
             };
             break;
         case "up":
-            if(this.y + imageEmptySpace > playerVerticalMove){
+            if(this.y + playerEmptySpace > playerVerticalMove){
                 this.y = this.y - playerVerticalMove;
-                    if(this.y + imageEmptySpace < playerVerticalMove){
+                    if(this.y + playerEmptySpace < playerVerticalMove){
                         console.log("You win!");
                         setTimeout(function() {player.reset()}.bind(player.reset), 1000);
                     };
@@ -106,7 +111,7 @@ Player.prototype.handleInput = function(key){
             };
             break;
         case "down":
-            if(this.y<screenHeight - tileHeight*2){
+            if(this.y + playerEmptySpace < screenHeight - tileHeight*2){
                 this.y = this.y + playerVerticalMove;
             };
     };
@@ -117,11 +122,11 @@ Player.prototype.handleInput = function(key){
 // a handleInput() method.
    
 var allEnemies = [];
-var player = new Player(tileWidth*2, screenHeight-135-imageEmptySpace, 171, 101);
+var player = new Player(tileWidth*2, screenHeight-135-playerEmptySpace, 75, 67);
 
 function initialEnemies(){
-    allEnemies.push(new Enemy(1, 60, 171, 101));
-    allEnemies.push(new Enemy(202, 140, 171, 101));
+    allEnemies.push(new Enemy(1, 60, 66, 101));
+    allEnemies.push(new Enemy(202, 140, 66, 101));
     //allEnemies.push(new Enemy(101, 225));
 
     for(var i=0; i<allEnemies.length; i++){
