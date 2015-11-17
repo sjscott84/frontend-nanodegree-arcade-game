@@ -1,7 +1,4 @@
 // Enemies our player must avoid
-var randomNumber = function randomIntFromInterval(){
-        return Math.floor(Math.random()*(350-200+1)+100);
-    };
 
 var screenWidth = 505,
 screenHeight = 606,
@@ -14,7 +11,8 @@ playerEmptySpace = 64+10,
 playerLowerEmptySpace = 32+10,
 enemyEmptySpace = 78+10,
 playerSideSpace = 17+10,
-enemyLowerEmptySpace = 27+10;
+enemyLowerEmptySpace = 27+10,
+score = 0;
 
 
 var Enemy = function(x, y, h, w) {
@@ -24,7 +22,7 @@ var Enemy = function(x, y, h, w) {
     this.h = h;
     this.w = w;
     this.speed = randomNumber();
-};
+}
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -43,7 +41,7 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-};
+}
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -51,7 +49,7 @@ Enemy.prototype.render = function() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     };
 
-};
+}
 
 var Player = function(x, y, h, w) {
     this.player = 'images/char-boy.png';
@@ -59,24 +57,36 @@ var Player = function(x, y, h, w) {
     this.y = y;
     this.h = h;
     this.w = w;
-
-};
+}
 
 Player.prototype.update = function(){
     //this.x = tileWidth*2;
     //this.y = tileHeight*4; 
-};
+}
 
 Player.prototype.reset = function(){
     this.x = tileWidth*2;
     this.y = screenHeight-135-playerEmptySpace; 
-};
+}
 
 Player.prototype.render = function(){
     if(Resources.get(this.player)){
         ctx.drawImage(Resources.get(this.player), this.x, this.y);
     };
-};
+}
+
+var Gem = function(x, y){
+    this.gem = 'images/Gem Blue.png';
+    this.x = x;
+    this.y = y;
+}
+
+Gem.prototype.render = function() {
+    if(Resources.get(this.gem)){
+        ctx.drawImage(Resources.get(this.gem), this.x, this.y);
+    };
+}
+
 
 Player.prototype.collide = function(){
     for(var i=0; i<allEnemies.length; i++){
@@ -87,7 +97,12 @@ Player.prototype.collide = function(){
             setTimeout(function() {player.reset()}.bind(player.reset), 200);
         }
     }
-};
+}
+
+//TODO:
+//gem collide
+//gem update
+//keep score
 
 Player.prototype.handleInput = function(key){
     switch (key){
@@ -100,7 +115,6 @@ Player.prototype.handleInput = function(key){
             if(this.y + playerEmptySpace > playerVerticalMove){
                 this.y = this.y - playerVerticalMove;
                     if(this.y + playerEmptySpace < playerVerticalMove){
-                        console.log("You win!");
                         setTimeout(function() {player.reset()}.bind(player.reset), 1000);
                     };
             };
@@ -115,14 +129,20 @@ Player.prototype.handleInput = function(key){
                 this.y = this.y + playerVerticalMove;
             };
     };
-};
+}
+
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
    
 var allEnemies = [];
+var gems = [];
 var player = new Player(tileWidth*2, screenHeight-135-playerEmptySpace, 75, 67);
+
+var randomNumber = function randomIntFromInterval(){
+        return Math.floor(Math.random()*(350-200+1)+100);
+    }
 
 function initialEnemies(){
     allEnemies.push(new Enemy(1, 60, 66, 101));
@@ -134,8 +154,21 @@ function initialEnemies(){
     };
 }
 
+function initialGems(){
+    gems.push(new Gem(1, 60));
+    gems.push(new Gem(202, 140));
+    gems.push(new Gem(101, 200));
+
+    for(var i=0; i<gems.length; i++){
+        gems[i].render();
+    };
+}
+
 initialEnemies();
+initialGems();
 player.render();
+
+
 
 
 // Now instantiate your objects.
