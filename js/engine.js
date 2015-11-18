@@ -152,10 +152,10 @@ var Engine = (function(global) {
             enemy.render();
         });
 
-    
-        gem.render();
-
         player.render();
+        gem.render();
+        heart.render();
+        score.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -174,10 +174,11 @@ var Engine = (function(global) {
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
+        'images/Gem Blue Small.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
         'images/Gem Blue.png',
-        'images/Gem Blue Small.png'
+        'images/Heart.png'
     ]);
     Resources.onReady(init);
 

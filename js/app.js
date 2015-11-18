@@ -65,16 +65,7 @@ var Player = function(x, y, h, w) {
     this.y = y;
     this.h = h;
     this.w = w;
-}
-
-Player.prototype.update = function(){
-    //this.x = tileWidth*2;
-    //this.y = tileHeight*4; 
-}
-
-Player.prototype.reset = function(){
-    this.x = tileWidth*2;
-    this.y = screenHeight-135-playerEmptySpace; 
+    this.lives = 5;
 }
 
 Player.prototype.render = function(){
@@ -83,42 +74,18 @@ Player.prototype.render = function(){
     };
 }
 
-var Gem = function(x, y, w, h){
-    this.gem = 'images/Gem Blue Small.png';
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
+Player.prototype.update = function(){
+
 }
 
-Gem.prototype.render = function() {
-    if(Resources.get(this.gem)){
-        ctx.drawImage(Resources.get(this.gem), this.x, this.y);
-    };
-}
-
-Gem.prototype.collision = function() {
-    if(this.x < player.x + playerSideSpace + player.w &&
-        this.x + this.w > player.x + playerSideSpace &&
-        this.y < player.y + playerEmptySpace + playerLowerEmptySpace + player.h &&
-        this.h + this.y > player.y + playerEmptySpace + playerLowerEmptySpace){
-        console.log("You got a gem!");
-        gem.update();
+Player.prototype.reset = function(){
+    if(this.y + playerEmptySpace > playerVerticalMove){
+        this.lives --;
+        heart.update();
     }
+    this.x = tileWidth*2;
+    this.y = screenHeight-135-playerEmptySpace;
 }
-
-Gem.prototype.update = function() {
-    if(score < 5){
-        score++;
-        delete this.gem;
-        gem = new Gem(randomX(), randomNumber(), 33, 36);
-        gem.render();
-        console.log(score);
-    }else{
-        alert("You have completed this level!");
-    };
-}
-
 
 Player.prototype.collide = function(){
     for(var i=0; i<allEnemies.length; i++){
@@ -126,15 +93,11 @@ Player.prototype.collide = function(){
             this.x + playerSideSpace + this.w > allEnemies[i].x &&
             this.y + playerEmptySpace + playerLowerEmptySpace < allEnemies[i].y + enemyEmptySpace + enemyLowerEmptySpace + allEnemies[i].h &&
             this.h + this.y + playerEmptySpace + playerLowerEmptySpace > allEnemies[i].y + enemyEmptySpace + enemyLowerEmptySpace){
-            setTimeout(function() {player.reset()}.bind(player.reset), 200);
+            //setTimeout(function() {player.reset()}.bind(player.reset), 200);
+            player.reset();
         }
     }
 }
-
-//TODO:
-//gem collide
-//gem update
-//keep score
 
 Player.prototype.handleInput = function(key){
     switch (key){
@@ -168,9 +131,87 @@ Player.prototype.handleInput = function(key){
 }
 
 
+var Gem = function(x, y, w, h){
+    this.gem = 'images/Gem Blue Small.png';
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+}
+
+Gem.prototype.render = function() {
+    if(Resources.get(this.gem)){
+        ctx.drawImage(Resources.get(this.gem), this.x, this.y);
+    };
+}
+
+Gem.prototype.collision = function() {
+    if(this.x < player.x + playerSideSpace + player.w &&
+        this.x + this.w > player.x + playerSideSpace &&
+        this.y < player.y + playerEmptySpace + playerLowerEmptySpace + player.h &&
+        this.h + this.y > player.y + playerEmptySpace + playerLowerEmptySpace){
+        gem.update();
+        score.update();
+    }
+}
+
+Gem.prototype.update = function() {
+        delete this.gem;
+        gem = new Gem(randomX(), randomNumber(), 33, 36);
+        gem.render();
+}
+
+var Heart = function(x, y){
+    this.x = x;
+    this.y = y;
+    this.heart = 'images/Heart.png';
+    this.count = player.lives + " x ";
+}
+
+Heart.prototype.render = function(){
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    if(Resources.get(this.heart)){
+        ctx.drawImage(Resources.get(this.heart), this.x + 40, this.y - 90);
+    };
+    ctx.fillText(this.count, this.x, this.y);
+    ctx.strokeText(this.count, this.x, this.y);
+}
+
+//TODO: Update only once on first collision
+Heart.prototype.update = function (){
+    this.count = player.lives + " x ";
+}
+
+var Score = function(x, y){
+    this.x = x;
+    this.y = y;
+    this.points = 0;
+    this.display = "Score: " + this.points;
+}
+
+Score.prototype.render = function(){
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText(this.display, this.x, this.y);
+    ctx.strokeText(this.display, this.x, this.y);
+}
+
+Score.prototype.update = function(){
+    this.points ++;
+    this.display = "Score: " + this.points;
+}
+
+
+
+
+
 var allEnemies = [];
 var gem = new Gem (randomX(), randomNumber(), 33, 36);
 var player = new Player(tileWidth*2, screenHeight-135-playerEmptySpace, 75, 67);
+var heart = new Heart(350, 100);
+var score = new Score(10, 100);
+
 
 function initialEnemies(){
     allEnemies.push(new Enemy(1, 60, 66, 101));
@@ -182,9 +223,12 @@ function initialEnemies(){
     };
 }
 
+    gem.render();
     initialEnemies();
     player.render();
-    gem.render()
+    heart.render();
+    score.render();
+
 
 
 
