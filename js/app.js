@@ -135,14 +135,18 @@ Player.prototype.handleInput = function(key){
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-   
-var allEnemies = [];
-var gems = [];
-var player = new Player(tileWidth*2, screenHeight-135-playerEmptySpace, 75, 67);
-
-var randomNumber = function randomIntFromInterval(){
+ 
+var randomNumber = function randomIntFromInterval(){  
         return Math.floor(Math.random()*(350-200+1)+100);
     }
+
+var randomX = function randomX(){
+        return Math.floor((Math.random() * 404 )+ 1);
+}
+
+var allEnemies = [];
+var gem = new Gem (randomX(), randomNumber());
+var player = new Player(tileWidth*2, screenHeight-135-playerEmptySpace, 75, 67);
 
 function initialEnemies(){
     allEnemies.push(new Enemy(1, 60, 66, 101));
@@ -154,20 +158,9 @@ function initialEnemies(){
     };
 }
 
-function initialGems(){
-    gems.push(new Gem(1, 60));
-    gems.push(new Gem(202, 140));
-    gems.push(new Gem(101, 200));
-
-    for(var i=0; i<gems.length; i++){
-        gems[i].render();
-    };
-}
-
-initialEnemies();
-initialGems();
-player.render();
-
+    initialEnemies();
+    player.render();
+    gem.render()
 
 
 
