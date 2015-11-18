@@ -14,6 +14,14 @@ playerSideSpace = 17+10,
 enemyLowerEmptySpace = 27+10,
 score = 0;
 
+var randomNumber = function randomIntFromInterval(){  
+        return Math.floor(Math.random()*(350-200+1)+200);
+    }
+
+var randomX = function randomX(){
+        return Math.floor((Math.random() * 404 )+ 1);
+}
+
 
 var Enemy = function(x, y, h, w) {
     this.sprite = 'images/enemy-bug.png';
@@ -75,15 +83,39 @@ Player.prototype.render = function(){
     };
 }
 
-var Gem = function(x, y){
-    this.gem = 'images/Gem Blue.png';
+var Gem = function(x, y, w, h){
+    this.gem = 'images/Gem Blue Small.png';
     this.x = x;
     this.y = y;
+    this.w = w;
+    this.h = h;
 }
 
 Gem.prototype.render = function() {
     if(Resources.get(this.gem)){
         ctx.drawImage(Resources.get(this.gem), this.x, this.y);
+    };
+}
+
+Gem.prototype.collision = function() {
+    if(this.x < player.x + playerSideSpace + player.w &&
+        this.x + this.w > player.x + playerSideSpace &&
+        this.y < player.y + playerEmptySpace + playerLowerEmptySpace + player.h &&
+        this.h + this.y > player.y + playerEmptySpace + playerLowerEmptySpace){
+        console.log("You got a gem!");
+        gem.update();
+    }
+}
+
+Gem.prototype.update = function() {
+    if(score < 5){
+        score++;
+        delete this.gem;
+        gem = new Gem(randomX(), randomNumber(), 33, 36);
+        gem.render();
+        console.log(score);
+    }else{
+        alert("You have completed this level!");
     };
 }
 
@@ -110,6 +142,7 @@ Player.prototype.handleInput = function(key){
             if(this.x>tileWidth-1){
                 this.x = this.x - playerSideMove;
             };
+            gem.collision();
             break;
         case "up":
             if(this.y + playerEmptySpace > playerVerticalMove){
@@ -118,34 +151,25 @@ Player.prototype.handleInput = function(key){
                         setTimeout(function() {player.reset()}.bind(player.reset), 1000);
                     };
             };
+            gem.collision();
             break;
         case "right":
             if(this.x<screenWidth - tileWidth){
                 this.x = this.x + playerSideMove;
             };
+            gem.collision();
             break;
         case "down":
             if(this.y + playerEmptySpace < screenHeight - tileHeight*2){
                 this.y = this.y + playerVerticalMove;
             };
+            gem.collision();
     };
 }
 
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
- 
-var randomNumber = function randomIntFromInterval(){  
-        return Math.floor(Math.random()*(350-200+1)+100);
-    }
-
-var randomX = function randomX(){
-        return Math.floor((Math.random() * 404 )+ 1);
-}
-
 var allEnemies = [];
-var gem = new Gem (randomX(), randomNumber());
+var gem = new Gem (randomX(), randomNumber(), 33, 36);
 var player = new Player(tileWidth*2, screenHeight-135-playerEmptySpace, 75, 67);
 
 function initialEnemies(){
