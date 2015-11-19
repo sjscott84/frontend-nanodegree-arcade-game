@@ -164,7 +164,7 @@ Gem.prototype.update = function() {
 var Heart = function(x, y){
     this.x = x;
     this.y = y;
-    this.heart = 'images/Heart.png';
+    this.heart = 'images/Heart Small.png';
     this.count = player.lives + " x ";
 }
 
@@ -172,7 +172,7 @@ Heart.prototype.render = function(){
     ctx.font = "30px Arial";
     ctx.fillStyle = "white";
     if(Resources.get(this.heart)){
-        ctx.drawImage(Resources.get(this.heart), this.x + 40, this.y - 90);
+        ctx.drawImage(Resources.get(this.heart), this.x + 45, this.y - 27);
     };
     ctx.fillText(this.count, this.x, this.y);
     ctx.strokeText(this.count, this.x, this.y);
@@ -209,7 +209,7 @@ Score.prototype.update = function(){
 var allEnemies = [];
 var gem = new Gem (randomX(), randomNumber(), 33, 36);
 var player = new Player(tileWidth*2, screenHeight-135-playerEmptySpace, 75, 67);
-var heart = new Heart(350, 100);
+var heart = new Heart(417, 100);
 var score = new Score(10, 100);
 
 
