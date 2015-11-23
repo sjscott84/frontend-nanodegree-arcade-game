@@ -9,26 +9,7 @@ var screenWidth = 505,
     playerEmptySpace = 64,
     score = 0;
 
-function randomIntFromInterval(){  
-        return Math.floor(Math.random()*(350-200+1)+200);
-    }
 
-function randomX(){
-        return Math.floor((Math.random() * 404 )+ 1);
-}
-
-
-function gemX (){
-    var gemX = [25, 126, 227, 328, 429];
-    var randomX = gemX[Math.floor(Math.random() * gemX.length)];
-    return randomX;
-}
-
-function gemY (){
-     var gemY = [146, 222, 318];
-     var randomY = gemY[Math.floor(Math.random() * gemY.length)];
-     return randomY;
-}
 
 
 var Enemy = function(x, y, h, w, image) {
@@ -49,7 +30,11 @@ Enemy.prototype.update = function(dt) {
     }else{
         //this is to reset the enemy
         this.x = -100;
-        this.y = Math.floor(Math.random()*(250-60+1)+60);
+            if(level.level === 1){
+                this.y = Math.floor(Math.random()*(250-60+1)+60);
+            }else{
+                this.y = Math.floor(Math.random()*(320-60+1)+60);
+            }
         this.speed = randomIntFromInterval();
         this.x += this.speed*dt;
         player.collideEnemy();
@@ -212,15 +197,14 @@ Score.prototype.render = function(){
 }
 
 Score.prototype.update = function(){
-    var win = "Yay! You win this level!";
     this.points ++;
     this.display = "Score: " + this.points;
     if(level.level === 1){
-        level.score(10);
+        level.score(2);
     }else if(level.level === 2){
-        level.score(15);
+        level.score(4);
     }else{
-        level.score(20);
+        level.score(6);
     }
 }
 
@@ -228,7 +212,7 @@ var Level = function(x, y){
     this.x = x;
     this.y = y;
     this.level = 1;
-    this.display = "Level "+this.level;
+    this.display = "Level " + this.level;
 }
 
 Level.prototype.render = function(){
@@ -248,26 +232,35 @@ Level.prototype.score = function(points){
     var winLevel = "Yay! You win this level!";
     var winGame = "Yay! You won the game!";
     if(score.points === points){
-        if(points === 20){
+        if(points === 6){
             alert(winGame);
-            window.reload();
+            location.reload();
         }else{
             alert(winLevel);
             level.update();
             score.points = 0;
             score.display = "Score: " + score.points;
+            player.reset();
+            level.enemies();
         }
     }
 }
 
+Level.prototype.enemies = function(){
+    if(this.level === 2){
+        allEnemies.push(new Enemy(101, 301, 30, 60, 'images/enemy-bug.png'));
+        allEnemies[2].render();
+    }
+}
 
 //Instatiate objects
 var allEnemies = [];
+var level = new Level(205, 100);
 var gem = new Gem (gemX(), gemY(), 35, 30, 'images/Gem Blue Small.png');
 var player = new Player(tileWidth*2, tileHeight*5, 40, 30, 'images/char-boy.png');
 var heart = new Heart(417, 100, 'images/Heart Small.png');
 var score = new Score(10, 100);
-var level = new Level(205, 100);
+
 
 
 function initialEnemies(){
@@ -279,13 +272,47 @@ function initialEnemies(){
         allEnemies[i].render();
     };
 }
-
+    
+    level.render();
     gem.render();
     initialEnemies();
     player.render();
     heart.render();
     score.render();
-    level.render();
+    
+
+
+//functions to generate random numbers
+function randomIntFromInterval(){ 
+    if(level.level === 1){ 
+        return Math.floor(Math.random()*(300-100+1)+100);
+    }else if(level.level === 2){
+        return Math.floor(Math.random()*(400-200+1)+200);
+    }else{
+        return Math.floor(Math.random()*(500-200+1)+200);
+    }
+}
+
+function randomX(){
+        return Math.floor((Math.random() * 404 )+ 1);
+}
+
+
+function gemX (){
+    var gemX = [25, 126, 227, 328, 429];
+    var randomX = gemX[Math.floor(Math.random() * gemX.length)];
+    return randomX;
+}
+
+function gemY (){
+    if(level.level === 1){
+        var gemY = [146, 222, 318];
+    }else{
+        var gemY = [146, 222, 318, 394];
+    };
+    var randomY = gemY[Math.floor(Math.random() * gemY.length)];
+    return randomY;
+}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

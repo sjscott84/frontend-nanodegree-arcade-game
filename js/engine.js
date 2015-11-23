@@ -107,6 +107,7 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
+        if(level.level === 1){
         var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
@@ -118,6 +119,20 @@ var Engine = (function(global) {
             numRows = 6,
             numCols = 5,
             row, col;
+        }else{
+            var rowImages = [
+                'images/water-block.png',   // Top row is water
+                'images/stone-block.png',   // Row 1 of 4 of stone
+                'images/stone-block.png',   // Row 2 of 4 of stone
+                'images/stone-block.png',   // Row 3 of 4 of stone
+                'images/stone-block.png',   // Row 4 of 4 of stone
+                'images/grass-block.png',   // Row 1 of 2 of grass
+                'images/grass-block.png'    // Row 2 of 2 of grass
+            ],
+            numRows = 7,
+            numCols = 5,
+            row, col;
+        }
 
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
@@ -152,11 +167,11 @@ var Engine = (function(global) {
             enemy.render();
         });
 
+        level.render();
         player.render();
         gem.render();
         heart.render();
         score.render();
-        level.render();
     }
 
     /* This function does nothing but it could have been a good place to
