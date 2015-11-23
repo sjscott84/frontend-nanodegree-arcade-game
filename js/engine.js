@@ -156,6 +156,7 @@ var Engine = (function(global) {
         gem.render();
         heart.render();
         score.render();
+        level.render();
     }
 
     /* This function does nothing but it could have been a good place to
