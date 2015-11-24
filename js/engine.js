@@ -120,6 +120,7 @@ var Engine = (function(global) {
             numCols = 5,
             row, col;
         }else{
+            canvas.height = 682;
             var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 4 of stone

@@ -6,18 +6,28 @@ var screenWidth = 505,
     tileHeight = 81,
     playerSideMove = 101,
     playerVerticalMove = 83,
-    playerEmptySpace = 64,
+    playerHeight = 75, 
+    playerWidth = 67,
+    playerTopSpace = 80,
+    playerSideSpace = 40,
+    enemeyHeight = 66,
+    enemyWidth = 97,
+    enemyTopSpace = 78,
+    enemySideSpace = 2,
+    gemHeight = 35,
+    gemWidth = 30,
+    gemTopSpace = 2,
+    gemSideSpace = 2,
     score = 0;
-
-
-
-
-var Enemy = function(x, y, h, w, image) {
+ 
+var Enemy = function(x, y, h, w, emptyTop, emptySide, image) {
     this.sprite = image;
     this.x = x;
     this.y = y;
     this.h = h;
     this.w = w;
+    this.side = emptySide;
+    this.top = emptyTop;
     this.speed = randomIntFromInterval();
 }
 
@@ -30,11 +40,11 @@ Enemy.prototype.update = function(dt) {
     }else{
         //this is to reset the enemy
         this.x = -100;
-            if(level.level === 1){
-                this.y = Math.floor(Math.random()*(250-60+1)+60);
-            }else{
-                this.y = Math.floor(Math.random()*(320-60+1)+60);
-            }
+        if(level.level === 1){
+            this.y = Math.floor(Math.random()*(250-60+1)+60);
+        }else{
+            this.y = Math.floor(Math.random()*(320-60+1)+60);
+        }
         this.speed = randomIntFromInterval();
         this.x += this.speed*dt;
         player.collideEnemy();
@@ -52,12 +62,14 @@ Enemy.prototype.render = function() {
 
 }
 
-var Player = function(x, y, h, w, image) {
+var Player = function(x, y, h, w, emptyTop, emptySide, image) {
     this.player = image;
     this.x = x;
     this.y = y;
     this.h = h;
     this.w = w;
+    this.side = emptySide;
+    this.top = emptyTop;
     this.lives = 5;
 }
 
@@ -65,6 +77,8 @@ Player.prototype.render = function(){
     if(Resources.get(this.player)){
         ctx.drawImage(Resources.get(this.player), this.x, this.y);
     };
+    //ctx.rect(this.x, this.y, this.w, this.h);
+    //ctx.stroke();
 }
 
 Player.prototype.update = function(){
@@ -72,31 +86,45 @@ Player.prototype.update = function(){
 }
 
 Player.prototype.reset = function(){
-    if(this.y + playerEmptySpace > playerVerticalMove){
+    if(this.y + playerTopSpace > playerVerticalMove){
         this.lives --;
         heart.update();
     }
-    this.x = tileWidth*2;
-    this.y = tileHeight*5;
+    if(level.level == 1){
+        this.x = tileWidth * 2;
+        this.y = tileHeight * 5;
+    }else{
+        this.x = tileWidth * 2;
+        this.y = tileHeight * 6;
+    }
 }
 
 Player.prototype.collideEnemy = function(){
-        for(var i=0; i<allEnemies.length; i++){
-            if(this.x < allEnemies[i].x + allEnemies[i].w &&
-               this.x + this.w > allEnemies[i].x &&
-               this.y < allEnemies[i].y + allEnemies[i].h &&
-               this.y + this.h > allEnemies[i].y){
-                    //setTimeout(function() {player.reset()}.bind(player.reset), 200);
-                    player.reset();
-            }
+    for(var i=0; i<allEnemies.length; i++){
+        if(isCollisionWith(player, allEnemies[i]))  {
+            //setTimeout(function() {player.reset()}.bind(player.reset), 200);
+            player.reset();
         }
+    }
+}
+
+function isCollisionWith(player, thing) {
+    var playerAdjustedX = player.x + player.side;
+    var playerAdjustedY = player.y + player.top;
+    var thingAdjustedX = thing.x + thing.side;
+    var thingAdjustedY = thing.y + thing.top;
+    if( playerAdjustedX < thingAdjustedX+ thing.w &&
+        playerAdjustedX + player.w > thingAdjustedX &&
+        playerAdjustedY < thingAdjustedY + thing.h &&
+        playerAdjustedY + player.h > thingAdjustedY) {
+        
+        console.log("COLLISION");
+        return true;
+    }
 }
 
 Player.prototype.collideGem = function(){
-    if(this.x < gem.x + gem.w &&
-        this.x + this.w > gem.x &&
-        this.y < gem.y + gem.h &&
-        this.y + this.h > gem.y){
+    if(isCollisionWith(player, gem)){
         score.update();
         gem.update();
     }
@@ -111,9 +139,9 @@ Player.prototype.handleInput = function(key){
             this.collideGem();
             break;
         case "up":
-            if(this.y + playerEmptySpace > playerVerticalMove){
+            if(this.y + playerTopSpace > playerVerticalMove){
                 this.y = this.y - playerVerticalMove;
-                    if(this.y + playerEmptySpace < playerVerticalMove){
+                    if(this.y + playerTopSpace < playerVerticalMove){
                         setTimeout(function() {player.reset()}.bind(player.reset), 1000);
                     };
             };
@@ -126,7 +154,7 @@ Player.prototype.handleInput = function(key){
             this.collideGem();
             break;
         case "down":
-            if(this.y + playerEmptySpace < screenHeight - tileHeight*2){
+            if(this.y + playerTopSpace < screenHeight - tileHeight*2){
                 this.y = this.y + playerVerticalMove;
             };
             this.collideGem();
@@ -134,13 +162,14 @@ Player.prototype.handleInput = function(key){
 
 }
 
-
-var Gem = function(x, y, h, w, image){
+var Gem = function(x, y, h, w, top, side, image){
     this.gem = image;
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.top = top;
+    this.side = side;
 }
 
 Gem.prototype.render = function() {
@@ -151,7 +180,7 @@ Gem.prototype.render = function() {
 
 Gem.prototype.update = function() {
         delete this.gem;
-        gem = new Gem(gemX(), gemY(), 30, 30, 'images/Gem Blue Small.png');
+        gem = new Gem(gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpace, 'images/Gem Blue Small.png');
         gem.render();
 }
 
@@ -248,7 +277,7 @@ Level.prototype.score = function(points){
 
 Level.prototype.enemies = function(){
     if(this.level === 2){
-        allEnemies.push(new Enemy(101, 301, 30, 60, 'images/enemy-bug.png'));
+        allEnemies.push(new Enemy(101, 301, enemeyHeight, enemyWidth, enemyTopSpace, enemySideSpace, 'images/enemy-bug.png'));
         allEnemies[2].render();
     }
 }
@@ -256,16 +285,17 @@ Level.prototype.enemies = function(){
 //Instatiate objects
 var allEnemies = [];
 var level = new Level(205, 100);
-var gem = new Gem (gemX(), gemY(), 35, 30, 'images/Gem Blue Small.png');
-var player = new Player(tileWidth*2, tileHeight*5, 40, 30, 'images/char-boy.png');
+var gem = new Gem (gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpace, 'images/Gem Blue Small.png');
+
+var player = new Player(tileWidth*2, tileHeight*5, playerHeight, playerWidth, playerTopSpace, playerSideSpace, 'images/char-boy.png');
 var heart = new Heart(417, 100, 'images/Heart Small.png');
 var score = new Score(10, 100);
 
 
 
 function initialEnemies(){
-    allEnemies.push(new Enemy(1, 60, 30, 60, 'images/enemy-bug.png'));
-    allEnemies.push(new Enemy(202, 140, 30, 60, 'images/enemy-bug.png'));
+    allEnemies.push(new Enemy(1, 60, enemeyHeight, enemyWidth, enemyTopSpace, enemySideSpace, 'images/enemy-bug.png'));
+    allEnemies.push(new Enemy(202, 140, enemeyHeight, enemyWidth, enemyTopSpace, enemySideSpace, 'images/enemy-bug.png'));
     //allEnemies.push(new Enemy(101, 225, 30, 60, 'images/enemy-bug.png'));
 
     for(var i=0; i<allEnemies.length; i++){
@@ -327,3 +357,4 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
