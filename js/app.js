@@ -18,6 +18,10 @@ var screenWidth = 505,
     gemWidth = 30,
     gemTopSpace = 2,
     gemSideSpace = 2,
+    heartHeight = 34,
+    heartWidth = 34,
+    heartTopSpace = 1.
+    heartSideSpace = 1,
     score = 0;
  
 var Enemy = function(x, y, h, w, emptyTop, emptySide, image) {
@@ -115,6 +119,14 @@ Player.prototype.collideGem = function(){
     }
 }
 
+Player.prototype.collideHeart = function(){
+    if(safeHeart.oneChance === true){
+        if(isCollisionWith(player, safeHeart)){
+            safeHeart.newLife();
+        }
+    }
+}
+
 Player.prototype.handleInput = function(key){
     switch (key){
         case "left":
@@ -122,6 +134,7 @@ Player.prototype.handleInput = function(key){
                 this.x = this.x - playerSideMove;
             };
             this.collideGem();
+            this.collideHeart();
             break;
         case "up":
             if(this.y + playerTopSpace > playerVerticalMove){
@@ -131,18 +144,21 @@ Player.prototype.handleInput = function(key){
                     };
             };
             this.collideGem();
+            this.collideHeart();
             break;
         case "right":
             if(this.x<screenWidth - tileWidth){
                 this.x = this.x + playerSideMove;
             };
             this.collideGem();
+            this.collideHeart();
             break;
         case "down":
             if(this.y + playerTopSpace < screenHeight - tileHeight*2){
                 this.y = this.y + playerVerticalMove;
             };
             this.collideGem();
+            this.collideHeart();
     };
 
 }
@@ -187,11 +203,7 @@ Heart.prototype.render = function(){
 }
 
 Heart.prototype.update = function (){
-    if(player.lives === 1){
-        safeHeart = new SafeHeart(gemX(), gemY(), 'images/Heart Small.png');
-        safeHeart.render();
-        this.count = player.lives + " x ";
-    }else if(player.lives < 0){
+    if(player.lives < 0){
         alert("Boo! You Lose");
         location.reload();
     }else{
@@ -199,21 +211,30 @@ Heart.prototype.update = function (){
     }
 }
 
-var SafeHeart = function(x, y, image){
+var SafeHeart = function(x, y, h, w, top, side, image){
     this.x = x;
     this.y = y;
+    this.h = h;
+    this.w = w;
+    this.top = top;
+    this.side = side;
     this.heart = image;
+    this.oneChance = true;
 }
 
 SafeHeart.prototype.render = function(){
-    if(Resources.get(this.heart)){
-        ctx.drawImage(Resources.get(this.heart), this.x, this.y);
-    };
+    if(player.lives === 1 && this.oneChance === true){
+        if(Resources.get(this.heart)){
+            ctx.drawImage(Resources.get(this.heart), this.x, this.y);
+        }
+    }
 }
 
 SafeHeart.prototype.newLife = function(){
-    var safeHeart = new SafeHeart(gemX(), gemY(), 'images/Heart Small.png');
-    safeHeart.render();
+    player.lives++;
+    heart.count = player.lives + " x ";
+    delete this.safeHeart;
+    this.oneChance = false;
 }
 
 var Score = function(x, y){
@@ -300,7 +321,7 @@ var gem = new Gem (gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpac
 var player = new Player(tileWidth*2, tileHeight*5, playerHeight, playerWidth, playerTopSpace, playerSideSpace, 'images/char-boy.png');
 var heart = new Heart(417, 100, 'images/Heart Small.png');
 var score = new Score(10, 100);
-var safeHeart = new SafeHeart(gemX(), gemY(), 'images/Heart Small.png');
+var safeHeart = new SafeHeart(gemX(), gemY(), heartHeight, heartWidth, heartTopSpace, heartSideSpace, 'images/Heart Small.png');
 
 
 
@@ -319,8 +340,6 @@ initialEnemies();
 player.render();
 heart.render();
 score.render();
-safeHeart.render();
-delete safeHeart.heart;
 
 //function to handle collision detection for all objects
 function isCollisionWith(player, thing) {
