@@ -187,12 +187,33 @@ Heart.prototype.render = function(){
 }
 
 Heart.prototype.update = function (){
-    if(player.lives < 0){
+    if(player.lives === 1){
+        safeHeart = new SafeHeart(gemX(), gemY(), 'images/Heart Small.png');
+        safeHeart.render();
+        this.count = player.lives + " x ";
+    }else if(player.lives < 0){
         alert("Boo! You Lose");
         location.reload();
     }else{
        this.count = player.lives + " x ";
     }
+}
+
+var SafeHeart = function(x, y, image){
+    this.x = x;
+    this.y = y;
+    this.heart = image;
+}
+
+SafeHeart.prototype.render = function(){
+    if(Resources.get(this.heart)){
+        ctx.drawImage(Resources.get(this.heart), this.x, this.y);
+    };
+}
+
+SafeHeart.prototype.newLife = function(){
+    var safeHeart = new SafeHeart(gemX(), gemY(), 'images/Heart Small.png');
+    safeHeart.render();
 }
 
 var Score = function(x, y){
@@ -279,6 +300,7 @@ var gem = new Gem (gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpac
 var player = new Player(tileWidth*2, tileHeight*5, playerHeight, playerWidth, playerTopSpace, playerSideSpace, 'images/char-boy.png');
 var heart = new Heart(417, 100, 'images/Heart Small.png');
 var score = new Score(10, 100);
+var safeHeart = new SafeHeart(gemX(), gemY(), 'images/Heart Small.png');
 
 
 
@@ -297,6 +319,8 @@ initialEnemies();
 player.render();
 heart.render();
 score.render();
+safeHeart.render();
+delete safeHeart.heart;
 
 //function to handle collision detection for all objects
 function isCollisionWith(player, thing) {
