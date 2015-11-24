@@ -108,21 +108,6 @@ Player.prototype.collideEnemy = function(){
     }
 }
 
-function isCollisionWith(player, thing) {
-    var playerAdjustedX = player.x + player.side;
-    var playerAdjustedY = player.y + player.top;
-    var thingAdjustedX = thing.x + thing.side;
-    var thingAdjustedY = thing.y + thing.top;
-    if( playerAdjustedX < thingAdjustedX+ thing.w &&
-        playerAdjustedX + player.w > thingAdjustedX &&
-        playerAdjustedY < thingAdjustedY + thing.h &&
-        playerAdjustedY + player.h > thingAdjustedY) {
-        
-        console.log("COLLISION");
-        return true;
-    }
-}
-
 Player.prototype.collideGem = function(){
     if(isCollisionWith(player, gem)){
         score.update();
@@ -201,7 +186,6 @@ Heart.prototype.render = function(){
     ctx.strokeText(this.count, this.x, this.y);
 }
 
-//TODO: Update only once on first collision
 Heart.prototype.update = function (){
     if(player.lives < 0){
         alert("Boo! You Lose");
@@ -228,6 +212,7 @@ Score.prototype.render = function(){
 Score.prototype.update = function(){
     this.points ++;
     this.display = "Score: " + this.points;
+
     if(level.level === 1){
         level.score(2);
     }else if(level.level === 2){
@@ -265,12 +250,16 @@ Level.prototype.score = function(points){
             alert(winGame);
             location.reload();
         }else{
-            alert(winLevel);
-            level.update();
-            score.points = 0;
-            score.display = "Score: " + score.points;
-            player.reset();
-            level.enemies();
+            setTimeout(function() {
+                alert(winLevel);
+                level.update();
+                score.points = 0;
+                score.display = "Score: " + score.points;
+                player.reset();
+                level.enemies();
+            }, 500)
+            
+            
         }
     }
 }
@@ -296,22 +285,35 @@ var score = new Score(10, 100);
 function initialEnemies(){
     allEnemies.push(new Enemy(1, 60, enemeyHeight, enemyWidth, enemyTopSpace, enemySideSpace, 'images/enemy-bug.png'));
     allEnemies.push(new Enemy(202, 140, enemeyHeight, enemyWidth, enemyTopSpace, enemySideSpace, 'images/enemy-bug.png'));
-    //allEnemies.push(new Enemy(101, 225, 30, 60, 'images/enemy-bug.png'));
 
     for(var i=0; i<allEnemies.length; i++){
         allEnemies[i].render();
     };
 }
     
-    level.render();
-    gem.render();
-    initialEnemies();
-    player.render();
-    heart.render();
-    score.render();
+level.render();
+gem.render();
+initialEnemies();
+player.render();
+heart.render();
+score.render();
+
+//function to handle collision detection for all objects
+function isCollisionWith(player, thing) {
+    var playerAdjustedX = player.x + player.side;
+    var playerAdjustedY = player.y + player.top;
+    var thingAdjustedX = thing.x + thing.side;
+    var thingAdjustedY = thing.y + thing.top;
+    if( playerAdjustedX < thingAdjustedX+ thing.w &&
+        playerAdjustedX + player.w > thingAdjustedX &&
+        playerAdjustedY < thingAdjustedY + thing.h &&
+        playerAdjustedY + player.h > thingAdjustedY) {
+        
+        console.log("COLLISION");
+        return true;
+    }
+}
     
-
-
 //functions to generate random numbers
 function randomIntFromInterval(){ 
     if(level.level === 1){ 
