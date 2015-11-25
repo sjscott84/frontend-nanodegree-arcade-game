@@ -2,6 +2,7 @@
 
 var screenWidth = 505,
     screenHeight = 606,
+    screenHeightNew = 682,
     tileWidth = 101,
     tileHeight = 81,
     playerSideMove = 101,
@@ -107,6 +108,7 @@ Player.prototype.collideEnemy = function(){
     for(var i=0; i<allEnemies.length; i++){
         if(isCollisionWith(player, allEnemies[i]))  {
             //setTimeout(function() {player.reset()}.bind(player.reset), 200);
+            player.update();
             player.reset();
         }
     }
@@ -154,9 +156,15 @@ Player.prototype.handleInput = function(key){
             this.collideHeart();
             break;
         case "down":
-            if(this.y + playerTopSpace < screenHeight - tileHeight*2){
-                this.y = this.y + playerVerticalMove;
-            };
+            if(level.level === 1){
+                if(this.y + playerTopSpace < screenHeight - tileHeight*2){
+                    this.y = this.y + playerVerticalMove;
+                }
+            }else{
+                if (this.y + playerTopSpace < screenHeightNew - tileHeight*2){
+                    this.y = this.y + playerVerticalMove;
+                }
+            }
             this.collideGem();
             this.collideHeart();
     };
@@ -223,7 +231,7 @@ var SafeHeart = function(x, y, h, w, top, side, image){
 }
 
 SafeHeart.prototype.render = function(){
-    if(player.lives === 1 && this.oneChance === true){
+    if(player.lives === (1 || 0) && this.oneChance === true){
         if(Resources.get(this.heart)){
             ctx.drawImage(Resources.get(this.heart), this.x, this.y);
         }
@@ -280,7 +288,8 @@ Level.prototype.render = function(){
 
 Level.prototype.update = function(){
     this.level++;
-    this.display = "Level "+this.level;
+    this.display = "Level " + this.level;
+    safeHeart.oneChance = true;
     level.render();
 }
 
@@ -299,9 +308,7 @@ Level.prototype.score = function(points){
                 score.display = "Score: " + score.points;
                 player.reset();
                 level.enemies();
-            }, 500)
-            
-            
+            }, 500);
         }
     }
 }
@@ -321,7 +328,7 @@ var gem = new Gem (gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpac
 var player = new Player(tileWidth*2, tileHeight*5, playerHeight, playerWidth, playerTopSpace, playerSideSpace, 'images/char-boy.png');
 var heart = new Heart(417, 100, 'images/Heart Small.png');
 var score = new Score(10, 100);
-var safeHeart = new SafeHeart(gemX(), gemY(), heartHeight, heartWidth, heartTopSpace, heartSideSpace, 'images/Heart Small.png');
+var safeHeart = new SafeHeart(gemX(), gemY(), heartHeight, heartWidth, heartTopSpace, heartSideSpace, 'images/Heart Small Safe.png');
 
 
 
