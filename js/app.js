@@ -24,7 +24,7 @@ var screenWidth = 505,
     heartTopSpace = 1.
     heartSideSpace = 1,
     score = 0;
- 
+
 var Enemy = function(x, y, h, w, emptyTop, emptySide, image) {
     this.sprite = image;
     this.x = x;
@@ -54,9 +54,6 @@ Enemy.prototype.update = function(dt) {
         this.x += this.speed*dt;
         player.collideEnemy();
     }
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
 }
 
 // Draw the enemy on the screen, required method for game
@@ -64,7 +61,6 @@ Enemy.prototype.render = function() {
     if(Resources.get(this.sprite)){
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     };
-
 }
 
 var Player = function(x, y, h, w, emptyTop, emptySide, image) {
@@ -82,16 +78,14 @@ Player.prototype.render = function(){
     if(Resources.get(this.player)){
         ctx.drawImage(Resources.get(this.player), this.x, this.y);
     };
-    //ctx.rect(this.x, this.y, this.w, this.h);
-    //ctx.stroke();
 }
 
 Player.prototype.update = function(){
-
+     
 }
 
 Player.prototype.reset = function(){
-    if(this.y + playerTopSpace > playerVerticalMove){
+    if(this.y + playerTopSpace > playerVerticalMove){//this resets the player without losing a life when player gets to the water
         this.lives --;
         heart.update();
     }
@@ -129,6 +123,7 @@ Player.prototype.collideHeart = function(){
     }
 }
 
+//Moves player around the screen
 Player.prototype.handleInput = function(key){
     switch (key){
         case "left":
@@ -193,6 +188,7 @@ Gem.prototype.update = function() {
         gem.render();
 }
 
+//Provides life score for game
 var Heart = function(x, y, image){
     this.x = x;
     this.y = y;
@@ -212,13 +208,14 @@ Heart.prototype.render = function(){
 
 Heart.prototype.update = function (){
     if(player.lives < 0){
-        alert("Boo! You Lose");
-        location.reload();
+        Alert.render("Sorry, you lose");
+        location.reload();//TODO: only do this when OK on you lost is clickec
     }else{
        this.count = player.lives + " x ";
     }
 }
 
+//Provides and extra life when lives get down to 1
 var SafeHeart = function(x, y, h, w, top, side, image){
     this.x = x;
     this.y = y;
@@ -245,6 +242,7 @@ SafeHeart.prototype.newLife = function(){
     this.oneChance = false;
 }
 
+//Tracks the number of gems collected
 var Score = function(x, y){
     this.x = x;
     this.y = y;
@@ -272,6 +270,7 @@ Score.prototype.update = function(){
     }
 }
 
+//Creates Levels
 var Level = function(x, y){
     this.x = x;
     this.y = y;
@@ -294,19 +293,17 @@ Level.prototype.update = function(){
 }
 
 Level.prototype.score = function(points){
-    var winLevel = "Yay! You win this level!";
-    var winGame = "Yay! You won the game!";
     if(score.points === points){
         if(points === 6){
-            alert(winGame);
+            Alert.render("Yay, you won the game!")
             location.reload();
         }else{
             setTimeout(function() {
-                alert(winLevel);
+                Alert.render("Yay, you won this level!");
                 level.update();
                 score.points = 0;
                 score.display = "Score: " + score.points;
-                player.reset();
+                level.player();
                 level.enemies();
             }, 500);
         }
@@ -320,17 +317,65 @@ Level.prototype.enemies = function(){
     }
 }
 
+Level.prototype.player = function(){
+    if(this.level == 1){
+        player.x = tileWidth * 2;
+        player.y = tileHeight * 5;
+    }else{
+        player.x = tileWidth * 2;
+        player.y = tileHeight * 6;
+    }
+}
+
+//Creates custom alert boxes
+var CustomAlert = function (){
+    this.winH = window.innerHeight;
+    this.winW = window.innerWidth;
+    this.dialogoverlay = document.getElementById('dialogoverlay');
+    this.startBox = document.getElementById('startingBox');
+    this.dialogbox = document.getElementById('dialogbox');
+}
+
+//Game instructions and start game button
+CustomAlert.prototype.instructions = function (){
+    this.dialogoverlay.style.height = this.winH+"px";
+    this.startBox.style.top = 200+"px";
+    this.startBox.style.left = (this.winW/2)-(450 * .5)+"px";
+    document.getElementById('instructions').innerHTML = "This is a test";
+    document.getElementById('startGame').innerHTML = '<button onclick="start.start()">Start Game!</button>';
+}
+
+CustomAlert.prototype.start = function(){
+    document.getElementById('dialogoverlay').style.display = "none";
+    document.getElementById('startingBox').style.display = "none";
+}
+
+//Level, game win and lose alerts
+CustomAlert.prototype.render = function(dialog){
+    this.dialogoverlay.style.display = "block";
+    this.dialogoverlay.style.height = this.winH+"px";
+    this.dialogbox.style.display = "block";
+    this.dialogbox.style.top = 200+"px";
+    this.dialogbox.style.left = (this.winW/2)-(450 * .5)+"px";
+    document.getElementById('dialogboxbody').innerHTML = dialog;
+    document.getElementById('dialogboxfoot').innerHTML = '<button onclick="Alert.ok()">OK</button>';
+}
+
+CustomAlert.prototype.ok = function(){
+    document.getElementById('dialogbox').style.display = "none";
+    document.getElementById('dialogoverlay').style.display = "none";
+}
+
 //Instatiate objects
 var allEnemies = [];
 var level = new Level(205, 100);
 var gem = new Gem (gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpace, 'images/Gem Blue Small.png');
-
 var player = new Player(tileWidth*2, tileHeight*5, playerHeight, playerWidth, playerTopSpace, playerSideSpace, 'images/char-boy.png');
 var heart = new Heart(417, 100, 'images/Heart Small.png');
 var score = new Score(10, 100);
 var safeHeart = new SafeHeart(gemX(), gemY(), heartHeight, heartWidth, heartTopSpace, heartSideSpace, 'images/Heart Small Safe.png');
-
-
+var start = new CustomAlert();
+var Alert = new CustomAlert();
 
 function initialEnemies(){
     allEnemies.push(new Enemy(1, 60, enemeyHeight, enemyWidth, enemyTopSpace, enemySideSpace, 'images/enemy-bug.png'));
@@ -341,12 +386,15 @@ function initialEnemies(){
     };
 }
     
+start.instructions();
 level.render();
 gem.render();
 initialEnemies();
 player.render();
 heart.render();
 score.render();
+safeHeart.render();
+
 
 //function to handle collision detection for all objects
 function isCollisionWith(player, thing) {
@@ -363,7 +411,7 @@ function isCollisionWith(player, thing) {
         return true;
     }
 }
-    
+
 //functions to generate random numbers
 function randomIntFromInterval(){ 
     if(level.level === 1){ 
@@ -395,6 +443,8 @@ function gemY (){
     var randomY = gemY[Math.floor(Math.random() * gemY.length)];
     return randomY;
 }
+
+
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
