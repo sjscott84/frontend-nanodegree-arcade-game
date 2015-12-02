@@ -89,13 +89,9 @@ Player.prototype.reset = function(){
         this.lives --;
         heart.update();
     }
-    if(level.level == 1){
-        this.x = tileWidth * 2;
-        this.y = tileHeight * 5;
-    }else{
-        this.x = tileWidth * 2;
-        this.y = tileHeight * 6;
-    }
+    this.x = tileWidth * 2;
+    this.y = tileHeight * 5;
+
 }
 
 Player.prototype.collideEnemy = function(){
@@ -151,15 +147,15 @@ Player.prototype.handleInput = function(key){
             this.collideHeart();
             break;
         case "down":
-            if(level.level === 1){
+            //if(level.level === 1){
                 if(this.y + playerTopSpace < screenHeight - tileHeight*2){
                     this.y = this.y + playerVerticalMove;
                 }
-            }else{
-                if (this.y + playerTopSpace < screenHeightNew - tileHeight*2){
-                    this.y = this.y + playerVerticalMove;
-                }
-            }
+            //}else{
+                //if (this.y + playerTopSpace < screenHeightNew - tileHeight*2){
+                    //this.y = this.y + playerVerticalMove;
+                //}
+            //}
             this.collideGem();
             this.collideHeart();
     };
@@ -183,9 +179,20 @@ Gem.prototype.render = function() {
 }
 
 Gem.prototype.update = function() {
-        delete this.gem;
+        var oldGem = this;
+        var match = true;
         gem = new Gem(gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpace, 'images/Gem Blue Small.png');
-        gem.render();
+        
+        console.log("old x"+oldGem.x+" y"+oldGem.y)
+        console.log("new x"+gem.x+" y"+gem.y)
+        while(match === true){
+            if(gem.x === oldGem.x && gem.y === oldGem.y){
+                gem = new Gem(gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpace, 'images/Gem Blue Small.png');
+            }else{
+                gem.render();
+                match = false;
+            }
+        }
 }
 
 //Provides life score for game
@@ -209,7 +216,6 @@ Heart.prototype.render = function(){
 Heart.prototype.update = function (){
     if(player.lives < 0){
         Alert.render("Sorry, you lose");
-        location.reload();//TODO: only do this when OK on you lost is clickec
     }else{
        this.count = player.lives + " x ";
     }
@@ -236,10 +242,12 @@ SafeHeart.prototype.render = function(){
 }
 
 SafeHeart.prototype.newLife = function(){
-    player.lives++;
-    heart.count = player.lives + " x ";
-    delete this.safeHeart;
-    this.oneChance = false;
+    if(player.lives <= 1){
+        player.lives++;
+        heart.count = player.lives + " x ";
+        delete this.safeHeart;
+        this.oneChance = false;
+    }
 }
 
 //Tracks the number of gems collected
@@ -262,7 +270,7 @@ Score.prototype.update = function(){
     this.display = "Score: " + this.points;
 
     if(level.level === 1){
-        level.score(2);
+        level.score(10);
     }else if(level.level === 2){
         level.score(4);
     }else{
@@ -296,7 +304,6 @@ Level.prototype.score = function(points){
     if(score.points === points){
         if(points === 6){
             Alert.render("Yay, you won the game!")
-            location.reload();
         }else{
             setTimeout(function() {
                 Alert.render("Yay, you won this level!");
@@ -318,13 +325,8 @@ Level.prototype.enemies = function(){
 }
 
 Level.prototype.player = function(){
-    if(this.level == 1){
         player.x = tileWidth * 2;
         player.y = tileHeight * 5;
-    }else{
-        player.x = tileWidth * 2;
-        player.y = tileHeight * 6;
-    }
 }
 
 //Creates custom alert boxes
@@ -341,13 +343,13 @@ CustomAlert.prototype.instructions = function (){
     this.dialogoverlay.style.height = this.winH+"px";
     this.startBox.style.top = 200+"px";
     this.startBox.style.left = (this.winW/2)-(450 * .5)+"px";
-    document.getElementById('instructions').innerHTML = "This is a test";
+    document.getElementById('instructions').innerHTML = instructions;
     document.getElementById('startGame').innerHTML = '<button onclick="start.start()">Start Game!</button>';
 }
 
 CustomAlert.prototype.start = function(){
-    document.getElementById('dialogoverlay').style.display = "none";
-    document.getElementById('startingBox').style.display = "none";
+    this.dialogoverlay.style.display = "none";
+    this.startBox.style.display = "none";
 }
 
 //Level, game win and lose alerts
@@ -362,11 +364,15 @@ CustomAlert.prototype.render = function(dialog){
 }
 
 CustomAlert.prototype.ok = function(){
-    document.getElementById('dialogbox').style.display = "none";
-    document.getElementById('dialogoverlay').style.display = "none";
+    this.dialogbox.style.display = "none";
+    this.dialogoverlay.style.display = "none";
+    if(player.lives < 0 || score.points === 6){
+        reload();
+    }
 }
 
 //Instatiate objects
+var instructions = "aslkjdh;ksjhg;asfg;sldhg<br>askjdfhsakjghksajhga<br>laksdflksdjhgk;sajhgklsgjh";
 var allEnemies = [];
 var level = new Level(205, 100);
 var gem = new Gem (gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpace, 'images/Gem Blue Small.png');
@@ -444,7 +450,9 @@ function gemY (){
     return randomY;
 }
 
-
+function reload(){
+    location.reload();
+}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
