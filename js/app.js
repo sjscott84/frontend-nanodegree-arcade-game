@@ -117,9 +117,9 @@ Player.prototype.collideEnemy = function(){
     }
 }
 
-//Find a collision between player and gems
+//Find a collision between player and gem, updates the score then checks to see if more gems should be created based on score
 Player.prototype.collideGem = function(){
-    if(isCollisionWith(player, gem)){
+    if(isCollisionWith(player, gem) && gem.allGems === false){
         score.update();
         if(level.level === 1 && score.gems < levelOneGems){
             gem.update();
@@ -129,6 +129,7 @@ Player.prototype.collideGem = function(){
             gem.update();
         }else{
             delete gem.gem;
+            gem.allGems = true;
         }
     }
 }
@@ -188,6 +189,7 @@ var Gem = function(x, y, h, w, top, side, image){
     this.top = top;
     this.side = side;
     this.match = true;
+    this.allGems = false;
 }
 
 //Draw gem on screen
@@ -292,6 +294,7 @@ Score.prototype.update = function(){
     this.display = 'Gems: ' + this.gems;
 }
 
+//Checks to see if player has enough gems to win level once in the water
 Score.prototype.check = function(){
     if(level.level === 1){
         level.score(levelOneGems);
@@ -368,7 +371,7 @@ var CustomAlert = function (){
 //Game instructions and start game button
 CustomAlert.prototype.instructions = function (){
     this.dialogoverlay.style.height = this.winH + 'px';
-    this.startBox.style.top = 100 + 'px';
+    this.startBox.style.top = 60 + 'px';
     this.startBox.style.left = (this.winW / 2) - (450 * .5) + 'px';
     document.getElementById('instructions').innerHTML = instructions;
     document.getElementById('startGame').innerHTML = '<button onclick="start.start()">Start Game!</button>';
@@ -401,7 +404,7 @@ CustomAlert.prototype.ok = function(){
 }
 
 //Instatiate objects
-var instructions = "Level 1 - collect 5 gems<br>Level 2 - collect 10 gems<br>Level 3 - collect 15 gems<br>Complete all 3 levels to win game!<br><br>Water and grass are safe<br>but entering the water will reset your player.<br><br>Have fun and good luck!<br><br>Pssst...keep an eye out for the extra lives.";
+var instructions = "Collect all the gems and get to the water!<br>Level 1 - collect 5 gems<br>Level 2 - collect 10 gems<br>Level 3 - collect 15 gems<br>Complete all 3 levels to win game!<br><br>Water and grass are safe<br>but entering the water without all the gems will reset your player.<br><br>Have fun and good luck!<br><br>Pssst...keep an eye out for the extra lives.";
 var allEnemies = [];
 var level = new Level(205, 100);
 var gem = new Gem (gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpace, 'images/Gem Blue Small.png');
