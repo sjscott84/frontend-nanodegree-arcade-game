@@ -354,6 +354,7 @@ Level.prototype.enemies = function(){
     }
 }
 
+//Custom alerts were created using code from https://www.developphp.com/video/JavaScript/Custom-Alert-Box-Programming-Tutorial, although it has been modified by me for use in this project
 //Creates custom alert boxes
 var CustomAlert = function (){
     this.winH = window.innerHeight;
