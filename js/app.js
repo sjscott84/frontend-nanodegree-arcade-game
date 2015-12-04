@@ -106,7 +106,6 @@ Player.prototype.collideEnemy = function(){
             if(isCollisionWith(player, allEnemies[i])){
                 player.dead = true;
                 setTimeout(function() {player.reset()}.bind(player.reset), 200);
-                player.update();
             }
         }
     }
