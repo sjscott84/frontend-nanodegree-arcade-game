@@ -3,43 +3,49 @@ body {
     overflow: hidden;
 }
 
-#startingBox{
-	display: block;
-	position: fixed;
-	font-family: Arial;
-	font-size: 30px;
-	background: #0C0;
-	border-radius:5px; 
-	width:450px;
-	z-index: 10;
+button{
+    font-size: 25px;
+    color: #0c0;
 }
 
-#startingBox > div{ background:#FFF; margin:8px; }
-#startingBox > div > #instructions{background:#FFF; padding:20px; color:#0C0; }
-#startingBox > div > #startGame{ background: #FFF; padding:10px; text-align:center; }
+#startingBox{
+    display: block;
+    position: fixed;
+    font-family: Arial;
+    font-size: 25px;
+    text-align: center;
+    background: #0c0;
+    border-radius:5px; 
+    width:450px;
+    z-index: 10;
+}
+
+#startingBox > div{ background: #fff; margin: 8px; }
+#startingBox > div > #instructions{background: #fff; padding: 20px; color: #0c0; }
+#startingBox > div > #startGame{ background: #fff; padding: 10px; text-align: center; }
 
 #dialogoverlay{
-	display: block;
-	opacity: .8;
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	background: #FFF;
-	width: 100%;
-	z-index: 10;
+    display: block;
+    opacity: 0.8;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #fff;
+    width: 100%;
+    z-index: 10;
 }
 
 #dialogbox{
-	display: none;
-	position: fixed;
-	font-family: Arial;
-	font-size: 30px;
-	background: #0C0;
-	border-radius:5px; 
-	width:450px;
-	z-index: 10;
+    display: none;
+    position: fixed;
+    font-family: Arial;
+    font-size: 30px;
+    background: #0c0;
+    border-radius:5px; 
+    width:450px;
+    z-index: 10;
 }
 
-#dialogbox > div{ background:#FFF; margin:8px; }
-#dialogbox > div > #dialogboxbody{ background:#FFF; padding:20px; color:#0C0; }
-#dialogbox > div > #dialogboxfoot{ background: #FFF; padding:10px; text-align:right; }
+#dialogbox > div{ background: #fff; margin: 8px; }
+#dialogbox > div > #dialogboxbody{ background: #fff; padding: 20px; color: #0c0; }
+#dialogbox > div > #dialogboxfoot{ background: #fff; padding: 10px; text-align: center; }
