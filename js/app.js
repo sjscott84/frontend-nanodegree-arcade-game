@@ -439,7 +439,7 @@ var safeHeart = new CollectableObject(HEART_HEIGHT,
                                       HEART_WIDTH,
                                       HEART_TOP_SPACE,
                                       HEART_SIDE_SPACE,
-                                      'images/Heart Small SAFE.png',
+                                      'images/Heart Small Safe.png',
                                       function() {
                                         return player.lives <=1 && this.oneChance === true;
                                       });
