@@ -6,26 +6,26 @@ var SCREEN_WIDTH = 505,
     TILE_HEIGHT = 81,
     PLAYER_SIDE_MOVE = 101,
     PLAYER_VERTICAL_MOVE = 83,
-    playerHeight = 50,
-    playerWidth = 40,
-    playerTopSpace = 80,
-    playerSideSpace = 40,
-    enemeyHeight = 66,
-    enemyWidth = 97,
-    enemyTopSpace = 78,
-    enemySideSpace = 2,
-    gemHeight = 35,
-    gemWidth = 30,
-    gemTopSpace = 2,
-    gemSideSpace = 2,
-    heartHeight = 34,
-    heartWidth = 34,
-    heartTopSpace = 1,
-    heartSideSpace = 1,
-    levelOneGems = 5,
-    levelTwoGems = 10,
-    levelThreeGems = 15,
-    safe = 81,
+    PLAYER_HEIGHT = 50,
+    PLAYER_WIDTH = 40,
+    PLAYER_TOP_SPACE = 80,
+    PLAYER_SIDE_SPACE = 40,
+    ENEMY_HEIGHT = 66,
+    ENEMY_WIDTH = 97,
+    ENEMY_TOP_SPACE = 78,
+    ENEMY_SIDE_SPACE = 2,
+    GEM_HEIGHT = 35,
+    GEM_WIDTH = 30,
+    GEM_TOP_SPACE = 2,
+    GEM_SIDE_SPACE = 2,
+    HEART_HEIGHT = 34,
+    HEART_WIDTH = 34,
+    HEART_TOP_SPACE = 1,
+    HEART_SIDE_SPACE = 1,
+    LEVEL_ONE_GEMS = 5,
+    LEVEL_TWO_GEMS = 10,
+    LEVEL_THREE_GEMS = 15,
+    SAFE = 81,
     score = 0;
 
 //Create the enemy object
@@ -91,7 +91,7 @@ Player.prototype.render = function(){
 //Reset the player to starting position after a collision
 Player.prototype.reset = function(){
     //this resets the player without losing a life when player gets to the water
-    if(this.y + playerTopSpace > PLAYER_VERTICAL_MOVE){
+    if(this.y + PLAYER_TOP_SPACE > PLAYER_VERTICAL_MOVE){
         this.lives --;
         heart.update();
     }
@@ -116,11 +116,11 @@ Player.prototype.collideEnemy = function(){
 Player.prototype.collideGem = function(){
     if(isCollisionWith(this, gem) && gem.allGems === false){
         score.update();
-        if(level.level === 1 && score.gems < levelOneGems){
+        if(level.level === 1 && score.gems < LEVEL_ONE_GEMS){
             gem.gemUpdate();
-        }else if(level.level === 2 && score.gems < levelTwoGems){
+        }else if(level.level === 2 && score.gems < LEVEL_TWO_GEMS){
             gem.gemUpdate();
-        }else if(level.level === 3 && score.gems < levelThreeGems){
+        }else if(level.level === 3 && score.gems < LEVEL_THREE_GEMS){
             gem.gemUpdate();
         }else{
             delete gem.image;
@@ -149,9 +149,9 @@ Player.prototype.handleInput = function(key){
             this.collideHeart();
             break;
         case 'up':
-            if(this.y + playerTopSpace > PLAYER_VERTICAL_MOVE){
+            if(this.y + PLAYER_TOP_SPACE > PLAYER_VERTICAL_MOVE){
                 this.y = this.y - PLAYER_VERTICAL_MOVE;
-                    if(this.y + playerTopSpace < PLAYER_VERTICAL_MOVE){
+                    if(this.y + PLAYER_TOP_SPACE < PLAYER_VERTICAL_MOVE){
                         score.check();
                     }
             }
@@ -166,7 +166,7 @@ Player.prototype.handleInput = function(key){
             this.collideHeart();
             break;
         case 'down':
-                if(this.y + playerTopSpace < SCREEN_HEIGHT - TILE_HEIGHT *  2){
+                if(this.y + PLAYER_TOP_SPACE < SCREEN_HEIGHT - TILE_HEIGHT *  2){
                     this.y = this.y + PLAYER_VERTICAL_MOVE;
                 }
             this.collideGem();
@@ -295,11 +295,11 @@ Score.prototype.update = function(){
 //Checks to see if player has enough gems to win level once in the water
 Score.prototype.check = function(){
     if(level.level === 1){
-        level.score(levelOneGems);
+        level.score(LEVEL_ONE_GEMS);
     }else if(level.level === 2){
-        level.score(levelTwoGems);
+        level.score(LEVEL_TWO_GEMS);
     }else{
-        level.score(levelThreeGems);
+        level.score(LEVEL_THREE_GEMS);
     }
 };
 
@@ -329,8 +329,8 @@ Level.prototype.update = function(){
 
 //Indicates if player has won the level or the game based on score/number of gems collected & if the player has reached the water
 Level.prototype.score = function(points){
-        if(score.gems === points && player.y + playerTopSpace < safe){
-            if(points === levelThreeGems){
+        if(score.gems === points && player.y + PLAYER_TOP_SPACE < SAFE){
+            if(points === LEVEL_THREE_GEMS){
                 Alert.render('Yay, you won the game!');
             }else{
                 var self = this;
@@ -341,10 +341,10 @@ Level.prototype.score = function(points){
                     score.display = 'Gems: ' + score.gems;
                     player.reset();
                     self.enemies();
-                    gem = new CollectableObject (gemHeight,
-                                                 gemWidth,
-                                                 gemTopSpace,
-                                                 gemSideSpace,
+                    gem = new CollectableObject (GEM_HEIGHT,
+                                                 GEM_WIDTH,
+                                                 GEM_TOP_SPACE,
+                                                 GEM_SIDE_SPACE,
                                                  'images/Gem Blue Small.png',
                                                  function() { 
                                                  return true; 
@@ -360,7 +360,7 @@ Level.prototype.score = function(points){
 //Adds an extra enemy to screen on level 2
 Level.prototype.enemies = function(){
     if(this.level === 2){
-        allEnemies.push(new Enemy(101, 301, enemeyHeight, enemyWidth, enemyTopSpace, enemySideSpace, 'images/enemy-bug.png'));
+        allEnemies.push(new Enemy(101, 301, ENEMY_HEIGHT, ENEMY_WIDTH, ENEMY_TOP_SPACE, ENEMY_SIDE_SPACE, 'images/enemy-bug.png'));
         allEnemies[2].render();
     }
 };
@@ -404,7 +404,7 @@ CustomAlert.prototype.render = function(dialog){
 CustomAlert.prototype.ok = function(){
     this.dialogbox.style.display = 'none';
     this.dialogoverlay.style.display = 'none';
-    if(player.lives < 0 || score.gems === levelThreeGems){
+    if(player.lives < 0 || score.gems === LEVEL_THREE_GEMS){
         reload();
     }
 };
@@ -418,28 +418,28 @@ var instructions = 'Collect all the gems and get to the water!<br>Level 1 - coll
                    '<br><br>Have fun and good luck!<br><br>Pssst...keep an eye out for the extra lives.';
 var allEnemies = [];
 var level = new Level(205, 100);
-var gem = new CollectableObject(gemHeight,
-                                gemWidth,
-                                gemTopSpace,
-                                gemSideSpace,
+var gem = new CollectableObject(GEM_HEIGHT,
+                                GEM_WIDTH,
+                                GEM_TOP_SPACE,
+                                GEM_SIDE_SPACE,
                                 'images/Gem Blue Small.png',
                                 function() { 
                                     return true; 
                                 });
 var player = new Player(TILE_WIDTH * 2,
                         TILE_HEIGHT * 5,
-                        playerHeight,
-                        playerWidth,
-                        playerTopSpace,
-                        playerSideSpace,
+                        PLAYER_HEIGHT,
+                        PLAYER_WIDTH,
+                        PLAYER_TOP_SPACE,
+                        PLAYER_SIDE_SPACE,
                         'images/char-boy.png');
 var heart = new Heart(417, 100, 'images/Heart Small.png');
 var score = new Score(10, 100);
-var safeHeart = new CollectableObject(heartHeight,
-                                      heartWidth,
-                                      heartTopSpace,
-                                      heartSideSpace,
-                                      'images/Heart Small Safe.png',
+var safeHeart = new CollectableObject(HEART_HEIGHT,
+                                      HEART_WIDTH,
+                                      HEART_TOP_SPACE,
+                                      HEART_SIDE_SPACE,
+                                      'images/Heart Small SAFE.png',
                                       function() {
                                         return player.lives <=1 && this.oneChance === true;
                                       });
@@ -449,17 +449,17 @@ var Alert = new CustomAlert();
 function initialEnemies(){
     allEnemies.push(new Enemy(1,
                               60,
-                              enemeyHeight,
-                              enemyWidth,
-                              enemyTopSpace,
-                              enemySideSpace,
+                              ENEMY_HEIGHT,
+                              ENEMY_WIDTH,
+                              ENEMY_TOP_SPACE,
+                              ENEMY_SIDE_SPACE,
                               'images/enemy-bug.png'));
     allEnemies.push(new Enemy(202,
                               140,
-                              enemeyHeight,
-                              enemyWidth,
-                              enemyTopSpace,
-                              enemySideSpace,
+                              ENEMY_HEIGHT,
+                              ENEMY_WIDTH,
+                              ENEMY_TOP_SPACE,
+                              ENEMY_SIDE_SPACE,
                               'images/enemy-bug.png'));
 
     for(var i = 0; i < allEnemies.length; i++){
