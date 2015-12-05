@@ -117,13 +117,13 @@ Player.prototype.collideGem = function(){
     if(isCollisionWith(this, gem) && gem.allGems === false){
         score.update();
         if(level.level === 1 && score.gems < levelOneGems){
-            gem.update();
+            gem.gemUpdate();
         }else if(level.level === 2 && score.gems < levelTwoGems){
-            gem.update();
+            gem.gemUpdate();
         }else if(level.level === 3 && score.gems < levelThreeGems){
-            gem.update();
+            gem.gemUpdate();
         }else{
-            delete gem.gem;
+            delete gem.image;
             gem.allGems = true;
         }
     }
@@ -174,39 +174,70 @@ Player.prototype.handleInput = function(key){
     }
 };
 
-//Create Gem object
-var Gem = function(x, y, h, w, top, side, image){
-    this.gem = image;
-    this.x = x;
-    this.y = y;
+//Create Gem and safeHeart objects
+var CollectableObject = function(h, w, top, side, image, shouldRenderFunc){
+    this.image = image;
+    this.x = this.xCordinates();
+    this.y = this.yCordinates();
     this.w = w;
     this.h = h;
     this.top = top;
     this.side = side;
-    this.match = true;
     this.allGems = false;
+    this.oneChance = true;
+    this.shouldRenderFunc = shouldRenderFunc;
 };
 
-//Draw gem on screen
-Gem.prototype.render = function() {
-    if(Resources.get(this.gem)){
-        ctx.drawImage(Resources.get(this.gem), this.x, this.y);
+//Get random x cordinates
+CollectableObject.prototype.xCordinates = function(){
+    var objectX = [25, 126, 227, 328, 429];
+    var randomX = objectX[Math.floor(Math.random() * objectX.length)];
+    return randomX;
+};
+
+//Get random y cordinates
+CollectableObject.prototype.yCordinates = function(){
+    var objectY = [];
+    if(level.level === 1){
+        objectY = [146, 222, 318];
+    }else{
+        objectY = [146, 222, 318, 394];
+    }
+    var randomY = objectY[Math.floor(Math.random() * objectY.length)];
+    return randomY;
+};
+
+//Render the gem or heart
+CollectableObject.prototype.render = function(){
+    if(this.shouldRenderFunc()){
+        if(Resources.get(this.image)){
+            ctx.drawImage(Resources.get(this.image), this.x, this.y);
+        }
     }
 };
 
-//Updates gem to new location when there is a collision ensuring the gem does not appear in the same spot twice in a row
-Gem.prototype.update = function() {
+//Add a new life to player on collision with safeHeart
+CollectableObject.prototype.newLife = function(){
+        if(player.lives <= 1){
+        player.lives++;
+        heart.count = player.lives + ' x ';
+        delete this;
+        this.oneChance = false;
+    }
+};
+
+//Update gem position ensuring gem does not appear in same space twice
+CollectableObject.prototype.gemUpdate = function(){
     var oldGemX = this.x;
     var oldGemY = this.y;
-    this.x = gemX();
-    this.y = gemY();
-    while(this.match === true){
+    var match = true;
+    while(match){
+        this.x = this.xCordinates();
+        this.y = this.yCordinates();
         if(this.x === oldGemX && this.y === oldGemY){
-            this.x = gemX();
-            this.y = gemY();
+            continue;
         }else{
-            this.render();
-            this.match = false;
+            match = false;
         }
     }
 };
@@ -236,37 +267,6 @@ Heart.prototype.update = function (){
         Alert.render('Sorry, you lose');
     }else{
        this.count = player.lives + ' x ';
-    }
-};
-
-//Provides and extra life when lives get down to 1
-var SafeHeart = function(x, y, h, w, top, side, image){
-    this.x = x;
-    this.y = y;
-    this.h = h;
-    this.w = w;
-    this.top = top;
-    this.side = side;
-    this.heart = image;
-    this.oneChance = true;
-};
-
-//Draw the extra life on the screen when player lives is 1 or 0
-SafeHeart.prototype.render = function(){
-    if(player.lives <=1 && this.oneChance === true){
-        if(Resources.get(this.heart)){
-            ctx.drawImage(Resources.get(this.heart), this.x, this.y);
-        }
-    }
-};
-
-//Adds an extra life to life count on collision with heart & ensures only one safeHeart is avaliable per level
-SafeHeart.prototype.newLife = function(){
-    if(player.lives <= 1){
-        player.lives++;
-        heart.count = player.lives + ' x ';
-        delete this.safeHeart;
-        this.oneChance = false;
     }
 };
 
@@ -341,7 +341,14 @@ Level.prototype.score = function(points){
                     score.display = 'Gems: ' + score.gems;
                     player.reset();
                     self.enemies();
-                    gem = gem = new Gem (gemX(), gemY(), gemHeight, gemWidth, gemTopSpace, gemSideSpace, 'images/Gem Blue Small.png');
+                    gem = new CollectableObject (gemHeight,
+                                                 gemWidth,
+                                                 gemTopSpace,
+                                                 gemSideSpace,
+                                                 'images/Gem Blue Small.png',
+                                                 function() { 
+                                                 return true; 
+                                                 });;
                     gem.render();
                 }, 500);
             }
@@ -403,21 +410,22 @@ CustomAlert.prototype.ok = function(){
 };
 
 //Instatiate objects
-var instructions = 'Collect all the gems and get to the water!<br>Level 1 - collect 5 gems'
-                    +'<br>Level 2 - collect 10 gems'
-                    +'<br>Level 3 - collect 15 gems'
-                    +'<br>Complete all 3 levels to win game!'
-                    +'<br><br>Water and grass are safe but entering the water without all the gems will reset your player.'
-                    +'<br><br>Have fun and good luck!<br><br>Pssst...keep an eye out for the extra lives.';
+var instructions = 'Collect all the gems and get to the water!<br>Level 1 - collect 5 gems'+
+                   '<br>Level 2 - collect 10 gems'+
+                   '<br>Level 3 - collect 15 gems'+
+                   '<br>Complete all 3 levels to win game!'+
+                   '<br><br>Water and grass are safe but entering the water without all the gems will reset your player.'+
+                   '<br><br>Have fun and good luck!<br><br>Pssst...keep an eye out for the extra lives.';
 var allEnemies = [];
 var level = new Level(205, 100);
-var gem = new Gem (gemX(),
-                   gemY(),
-                   gemHeight,
-                   gemWidth,
-                   gemTopSpace,
-                   gemSideSpace,
-                   'images/Gem Blue Small.png');
+var gem = new CollectableObject(gemHeight,
+                                gemWidth,
+                                gemTopSpace,
+                                gemSideSpace,
+                                'images/Gem Blue Small.png',
+                                function() { 
+                                    return true; 
+                                });
 var player = new Player(TILE_WIDTH * 2,
                         TILE_HEIGHT * 5,
                         playerHeight,
@@ -427,13 +435,14 @@ var player = new Player(TILE_WIDTH * 2,
                         'images/char-boy.png');
 var heart = new Heart(417, 100, 'images/Heart Small.png');
 var score = new Score(10, 100);
-var safeHeart = new SafeHeart(gemX(),
-                              gemY(),
-                              heartHeight,
-                              heartWidth,
-                              heartTopSpace,
-                              heartSideSpace,
-                              'images/Heart Small Safe.png');
+var safeHeart = new CollectableObject(heartHeight,
+                                      heartWidth,
+                                      heartTopSpace,
+                                      heartSideSpace,
+                                      'images/Heart Small Safe.png',
+                                      function() {
+                                        return player.lives <=1 && this.oneChance === true;
+                                      });
 var start = new CustomAlert();
 var Alert = new CustomAlert();
 
@@ -466,8 +475,6 @@ initialEnemies();
 player.render();
 heart.render();
 score.render();
-safeHeart.render();
-
 
 //function to handle collision detection for all objects
 function isCollisionWith(player, thing) {
@@ -492,23 +499,6 @@ function randomIntFromInterval(){
     }else{
         return Math.floor(Math.random()*(500 - 200 + 1) + 200);
     }
-}
-
-function gemX (){
-    var gemX = [25, 126, 227, 328, 429];
-    var randomX = gemX[Math.floor(Math.random() * gemX.length)];
-    return randomX;
-}
-
-function gemY (){
-    var gemY = [];
-    if(level.level === 1){
-        gemY = [146, 222, 318];
-    }else{
-        gemY = [146, 222, 318, 394];
-    }
-    var randomY = gemY[Math.floor(Math.random() * gemY.length)];
-    return randomY;
 }
 
 //Reloads page after game loss or win
