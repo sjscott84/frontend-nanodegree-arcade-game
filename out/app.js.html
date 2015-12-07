@@ -1,4 +1,32 @@
-'use strict';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: app.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: app.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
 
 var SCREEN_WIDTH = 505,
     SCREEN_HEIGHT = 606,
@@ -55,7 +83,7 @@ var Enemy = function(x, y, h, w, emptyTop, emptySide, image) {
  * @param {number} dt a time delta between ticks
 */
 Enemy.prototype.update = function(dt) {
-    if(this.x < SCREEN_WIDTH){
+    if(this.x &lt; SCREEN_WIDTH){
         this.x += this.speed*dt;
         player.collideEnemy();
     }else{
@@ -132,7 +160,7 @@ Player.prototype.reset = function(){
  */
 Player.prototype.collideEnemy = function(){
     if(this.dead === false){
-        for(var i=0; i<allEnemies.length; i++){
+        for(var i=0; i&lt;allEnemies.length; i++){
             if(isCollisionWith(this, allEnemies[i])){
                 this.dead = true;
                 setTimeout(this.reset.bind(this), 200);
@@ -146,13 +174,13 @@ Player.prototype.collideEnemy = function(){
  * updates the score then checks to see if more gems should be created based on score
  */
 Player.prototype.collideGem = function(){
-    if(isCollisionWith(this, gem) && gem.allGems === false){
+    if(isCollisionWith(this, gem) &amp;&amp; gem.allGems === false){
         score.update();
-        if(level.level === 1 && score.gems < LEVEL_ONE_GEMS){
+        if(level.level === 1 &amp;&amp; score.gems &lt; LEVEL_ONE_GEMS){
             gem.gemUpdate();
-        }else if(level.level === 2 && score.gems < LEVEL_TWO_GEMS){
+        }else if(level.level === 2 &amp;&amp; score.gems &lt; LEVEL_TWO_GEMS){
             gem.gemUpdate();
-        }else if(level.level === 3 && score.gems < LEVEL_THREE_GEMS){
+        }else if(level.level === 3 &amp;&amp; score.gems &lt; LEVEL_THREE_GEMS){
             gem.gemUpdate();
         }else{
             delete gem.image;
@@ -188,7 +216,7 @@ Player.prototype.handleInput = function(key){
         case 'up':
             if(this.y + PLAYER_TOP_SPACE > PLAYER_VERTICAL_MOVE){
                 this.y = this.y - PLAYER_VERTICAL_MOVE;
-                    if(this.y + PLAYER_TOP_SPACE < PLAYER_VERTICAL_MOVE){
+                    if(this.y + PLAYER_TOP_SPACE &lt; PLAYER_VERTICAL_MOVE){
                         score.check();
                     }
             }
@@ -196,14 +224,14 @@ Player.prototype.handleInput = function(key){
             this.collideHeart();
             break;
         case 'right':
-            if(this.x < SCREEN_WIDTH - TILE_WIDTH){
+            if(this.x &lt; SCREEN_WIDTH - TILE_WIDTH){
                 this.x = this.x + PLAYER_SIDE_MOVE;
             }
             this.collideGem();
             this.collideHeart();
             break;
         case 'down':
-                if(this.y + PLAYER_TOP_SPACE < SCREEN_HEIGHT - TILE_HEIGHT *  2){
+                if(this.y + PLAYER_TOP_SPACE &lt; SCREEN_HEIGHT - TILE_HEIGHT *  2){
                     this.y = this.y + PLAYER_VERTICAL_MOVE;
                 }
             this.collideGem();
@@ -272,7 +300,7 @@ CollectableObject.prototype.render = function(){
  * Add a new life to player on collision with safeHeart
  */
 CollectableObject.prototype.newLife = function(){
-    if(player.lives <= 1){
+    if(player.lives &lt;= 1){
         player.lives++;
         heart.count = player.lives + ' x ';
         delete this;
@@ -290,7 +318,7 @@ CollectableObject.prototype.gemUpdate = function(){
     while(match){
         this.x = this.xCordinates();
         this.y = this.yCordinates();
-        if(this.x === oldGemX && this.y === oldGemY){
+        if(this.x === oldGemX &amp;&amp; this.y === oldGemY){
             continue;
         }else{
             match = false;
@@ -329,7 +357,7 @@ Heart.prototype.render = function(){
  * Update the life count on collision with enemy
  */
 Heart.prototype.update = function (){
-    if(player.lives < 0){
+    if(player.lives &lt; 0){
         Alert.render('Sorry, you lose');
     }else{
        this.count = player.lives + ' x ';
@@ -414,11 +442,11 @@ Level.prototype.update = function(){
 };
 
 /**
- * Indicates if player has won the level or the game based on score/number of gems collected & if the player has reached the water
+ * Indicates if player has won the level or the game based on score/number of gems collected &amp; if the player has reached the water
  * @param {!number} points Number of gems needed to win each level
  */
 Level.prototype.score = function(points){
-    if(score.gems === points && player.y + PLAYER_TOP_SPACE < SAFE){
+    if(score.gems === points &amp;&amp; player.y + PLAYER_TOP_SPACE &lt; SAFE){
         if(points === LEVEL_THREE_GEMS){
             Alert.render('Yay, you won the game!');
         }else{
@@ -477,7 +505,7 @@ CustomAlert.prototype.instructions = function (){
     this.startBox.style.top = 60 + 'px';
     this.startBox.style.left = (this.winW / 2) - (450 * 0.5) + 'px';
     document.getElementById('instructions').innerHTML = instructions;
-    document.getElementById('startGame').innerHTML = '<button onclick="start.start()">Start Game!</button>';
+    document.getElementById('startGame').innerHTML = '&lt;button onclick="start.start()">Start Game!&lt;/button>';
 };
 
 /**
@@ -499,7 +527,7 @@ CustomAlert.prototype.render = function(dialog){
     this.dialogbox.style.top = 200 + 'px';
     this.dialogbox.style.left = (this.winW / 2) - (450 * 0.5) + 'px';
     document.getElementById('dialogboxbody').innerHTML = dialog;
-    document.getElementById('dialogboxfoot').innerHTML = '<button onclick="Alert.ok()">OK</button>';
+    document.getElementById('dialogboxfoot').innerHTML = '&lt;button onclick="Alert.ok()">OK&lt;/button>';
 };
 
 /**
@@ -508,7 +536,7 @@ CustomAlert.prototype.render = function(dialog){
 CustomAlert.prototype.ok = function(){
     this.dialogbox.style.display = 'none';
     this.dialogoverlay.style.display = 'none';
-    if(player.lives < 0 || score.gems === LEVEL_THREE_GEMS){
+    if(player.lives &lt; 0 || score.gems === LEVEL_THREE_GEMS){
         reload();
     }
 };
@@ -516,12 +544,12 @@ CustomAlert.prototype.ok = function(){
 /**
  * Instatiate objects
  */
-var instructions = 'Collect all the gems and get to the water!<br>Level 1 - collect 5 gems'+
-                   '<br>Level 2 - collect 10 gems'+
-                   '<br>Level 3 - collect 15 gems'+
-                   '<br>Complete all 3 levels to win game!'+
-                   '<br><br>Water and grass are safe but entering the water without all the gems will reset your player.'+
-                   '<br><br>Have fun and good luck!<br><br>Pssst...keep an eye out for the extra lives.';
+var instructions = 'Collect all the gems and get to the water!&lt;br>Level 1 - collect 5 gems'+
+                   '&lt;br>Level 2 - collect 10 gems'+
+                   '&lt;br>Level 3 - collect 15 gems'+
+                   '&lt;br>Complete all 3 levels to win game!'+
+                   '&lt;br>&lt;br>Water and grass are safe but entering the water without all the gems will reset your player.'+
+                   '&lt;br>&lt;br>Have fun and good luck!&lt;br>&lt;br>Pssst...keep an eye out for the extra lives.';
 var allEnemies = [];
 var level = new Level(205, 100);
 var gem = new CollectableObject(GEM_HEIGHT,
@@ -547,7 +575,7 @@ var safeHeart = new CollectableObject(HEART_HEIGHT,
                                       HEART_SIDE_SPACE,
                                       'images/Heart Small Safe.png',
                                       function() {
-                                        return player.lives <=1 && this.oneChance === true;
+                                        return player.lives &lt;=1 &amp;&amp; this.oneChance === true;
                                       });
 var start = new CustomAlert();
 var Alert = new CustomAlert();
@@ -556,7 +584,7 @@ function initialEnemies(){
     allEnemies.push(enemyFactory(1, 60));
     allEnemies.push(enemyFactory(202, 140));
 
-    for(var i = 0; i < allEnemies.length; i++){
+    for(var i = 0; i &lt; allEnemies.length; i++){
         allEnemies[i].render();
     }
 }
@@ -582,9 +610,9 @@ function isCollisionWith(player, thing) {
     var playerAdjustedY = player.y + player.top;
     var thingAdjustedX = thing.x + thing.side;
     var thingAdjustedY = thing.y + thing.top;
-    if( playerAdjustedX < thingAdjustedX+ thing.w &&
-        playerAdjustedX + player.w > thingAdjustedX &&
-        playerAdjustedY < thingAdjustedY + thing.h &&
+    if( playerAdjustedX &lt; thingAdjustedX+ thing.w &amp;&amp;
+        playerAdjustedX + player.w > thingAdjustedX &amp;&amp;
+        playerAdjustedY &lt; thingAdjustedY + thing.h &amp;&amp;
         playerAdjustedY + player.h > thingAdjustedY) {
         return true;
     }
@@ -640,3 +668,26 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CollectableObject.html">CollectableObject</a></li><li><a href="CustomAlert.html">CustomAlert</a></li><li><a href="Enemy.html">Enemy</a></li><li><a href="Heart.html">Heart</a></li><li><a href="Level.html">Level</a></li><li><a href="Player.html">Player</a></li><li><a href="Score.html">Score</a></li></ul><h3>Global</h3><ul><li><a href="global.html#enemyFactory">enemyFactory</a></li><li><a href="global.html#instructions">instructions</a></li><li><a href="global.html#randomIntFromInterval">randomIntFromInterval</a></li><li><a href="global.html#reload">reload</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Dec 07 2015 10:42:31 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
