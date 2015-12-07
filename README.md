@@ -40,3 +40,7 @@ Level 2 contains three bugs moving at random speeds, these bugs can also move fa
 ## Level 3
 
 Level 3 is identical to level 2.
+
+## Technical
+
+Technical details can be found at https://github.com/sjscott84/frontend-nanodegree-arcade-game-1/tree/master/out
