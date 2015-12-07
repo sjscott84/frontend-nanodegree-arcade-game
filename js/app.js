@@ -28,7 +28,7 @@ var SCREEN_WIDTH = 505,
     SAFE = 81,
     score = 0;
 
-//Create the enemy object
+/** Create the enemy object. */
 var Enemy = function(x, y, h, w, emptyTop, emptySide, image) {
     this.sprite = image;
     this.x = x;
@@ -218,7 +218,7 @@ CollectableObject.prototype.render = function(){
 
 //Add a new life to player on collision with safeHeart
 CollectableObject.prototype.newLife = function(){
-        if(player.lives <= 1){
+    if(player.lives <= 1){
         player.lives++;
         heart.count = player.lives + ' x ';
         delete this;
@@ -329,38 +329,38 @@ Level.prototype.update = function(){
 
 //Indicates if player has won the level or the game based on score/number of gems collected & if the player has reached the water
 Level.prototype.score = function(points){
-        if(score.gems === points && player.y + PLAYER_TOP_SPACE < SAFE){
-            if(points === LEVEL_THREE_GEMS){
-                Alert.render('Yay, you won the game!');
-            }else{
-                var self = this;
-                setTimeout(function() {
-                    Alert.render('Yay, you won this level!');
-                    self.update();
-                    score.gems = 0;
-                    score.display = 'Gems: ' + score.gems;
-                    player.reset();
-                    self.enemies();
-                    gem = new CollectableObject (GEM_HEIGHT,
-                                                 GEM_WIDTH,
-                                                 GEM_TOP_SPACE,
-                                                 GEM_SIDE_SPACE,
-                                                 'images/Gem Blue Small.png',
-                                                 function() { 
-                                                 return true; 
-                                                 });;
-                    gem.render();
-                }, 500);
-            }
+    if(score.gems === points && player.y + PLAYER_TOP_SPACE < SAFE){
+        if(points === LEVEL_THREE_GEMS){
+            Alert.render('Yay, you won the game!');
         }else{
-            setTimeout(player.reset.bind(player), 1000);
+            var self = this;
+            setTimeout(function() {
+                Alert.render('Yay, you won this level!');
+                self.update();
+                score.gems = 0;
+                score.display = 'Gems: ' + score.gems;
+                player.reset();
+                self.enemies();
+                gem = new CollectableObject (GEM_HEIGHT,
+                                             GEM_WIDTH,
+                                             GEM_TOP_SPACE,
+                                             GEM_SIDE_SPACE,
+                                             'images/Gem Blue Small.png',
+                                             function() { 
+                                             return true; 
+                                             });
+                gem.render();
+            }, 500);
         }
+    }else{
+        setTimeout(player.reset.bind(player), 1000);
+    }
 };
 
 //Adds an extra enemy to screen on level 2
 Level.prototype.enemies = function(){
     if(this.level === 2){
-        allEnemies.push(new Enemy(101, 301, ENEMY_HEIGHT, ENEMY_WIDTH, ENEMY_TOP_SPACE, ENEMY_SIDE_SPACE, 'images/enemy-bug.png'));
+        enemyFactory(101, 301);
         allEnemies[2].render();
     }
 };
@@ -447,20 +447,8 @@ var start = new CustomAlert();
 var Alert = new CustomAlert();
 
 function initialEnemies(){
-    allEnemies.push(new Enemy(1,
-                              60,
-                              ENEMY_HEIGHT,
-                              ENEMY_WIDTH,
-                              ENEMY_TOP_SPACE,
-                              ENEMY_SIDE_SPACE,
-                              'images/enemy-bug.png'));
-    allEnemies.push(new Enemy(202,
-                              140,
-                              ENEMY_HEIGHT,
-                              ENEMY_WIDTH,
-                              ENEMY_TOP_SPACE,
-                              ENEMY_SIDE_SPACE,
-                              'images/enemy-bug.png'));
+    enemyFactory(1, 60);
+    enemyFactory(202, 140);
 
     for(var i = 0; i < allEnemies.length; i++){
         allEnemies[i].render();
@@ -488,6 +476,17 @@ function isCollisionWith(player, thing) {
         playerAdjustedY + player.h > thingAdjustedY) {
         return true;
     }
+}
+
+//Creates the enemies
+function enemyFactory(x, y){
+    allEnemies.push(new Enemy(x,
+                              y,
+                              ENEMY_HEIGHT,
+                              ENEMY_WIDTH,
+                              ENEMY_TOP_SPACE,
+                              ENEMY_SIDE_SPACE,
+                              'images/enemy-bug.png'));
 }
 
 //functions to generate random numbers
